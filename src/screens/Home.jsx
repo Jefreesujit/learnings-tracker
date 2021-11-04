@@ -2,13 +2,27 @@ import React, { useState } from 'react';
 import TagInput from 'react-native-tags-input';
 import { Dimensions, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const [ learning, setLearning ] = useState('');
   const [tags, setTags] = useState({ tag: '', tagsArray: [] });
+
+  const onSaveLearning = () => {
+    navigation.navigate('Success', { name: 'Jefree' });
+  };
+
+  const viewLearning = () => {
+    navigation.navigate('Timeline', { name: 'Jefree' });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.learningSection}>
-        <Text style={styles.welcomeTitle}>Welcome Jefree,</Text>
+        <View style={styles.titleSection}>
+          <Text style={styles.welcomeTitle}>Welcome Jefree,</Text>
+          <TouchableOpacity onPress={viewLearning}>
+            <Text style={styles.navLink}>My Timeline</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.questionText}>What did you learn today?</Text>
         <TextInput
           style={styles.learningText}
@@ -24,12 +38,13 @@ const Home = () => {
           updateState={setTags}
           tags={tags}
           placeholder="Add labels"
+          inputStyle={styles.tagInput}
           tagStyle={styles.tag}
           tagTextStyle={styles.tagText}
         />
       </View>
       <View style={styles.actionContainer}>
-        <TouchableOpacity style={styles.saveButton}>
+        <TouchableOpacity style={styles.saveButton} onPress={onSaveLearning}>
           <Text style={styles.saveButtonText}>Save Learnings</Text>
         </TouchableOpacity>
       </View>
@@ -45,30 +60,30 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   learningSection: {
-    margin: 24,
+    margin: 16,
   },
   questionText: {
-    marginTop: 16,
-    fontSize: 56,
+    marginTop: 24,
+    fontSize: 48,
     fontWeight: 'bold',
   },
   learningText: {
     marginTop: 36,
     marginBottom: 24,
-    fontSize: 32,
+    fontSize: 26,
     borderColor: 'gray',
     borderRadius: 32,
     borderStyle: 'dotted',
     borderWidth: 4,
     height: 260,
-    lineHeight: 40,
+    lineHeight: 34,
     paddingTop: 24,
     includeFontPadding: true
   },
   welcomeTitle: {
     marginTop: 8,
-    marginBottom: 16,
-    fontSize: 24,
+    marginBottom: 12,
+    fontSize: 22,
     alignItems: 'flex-start',
     textAlign: 'left',
     fontWeight: 'bold',
@@ -79,11 +94,15 @@ const styles = StyleSheet.create({
   },
   tag: {
     backgroundColor: '#80c905',
-    height: 32,
+    height: 36,
   },
   tagText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
+  },
+  tagInput: {
+    fontSize: 24,
+    margin: 8
   },
   saveButton: {
     width: '100%',
@@ -96,6 +115,22 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 24,
+  },
+  titleSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    textAlign: 'center',
+    alignItems: 'center'
+  },
+  navLink: {
+    marginTop: 8,
+    marginBottom: 12,
+    padding: 8,
+    fontSize: 16,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    color: '#80c905',
+    backgroundColor: '#80c90528'
   }
 });
 
