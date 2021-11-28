@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
     margin: 16
   },
   timelineStyle: {
-    margin: 24,
+    margin: 8,
+    marginTop: 24
   },
   timeContainerStyle: {
     minWidth: 74,

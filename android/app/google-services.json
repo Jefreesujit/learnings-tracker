@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "672734400651",
+    "project_id": "what-i-learned-today-371d0",
+    "storage_bucket": "what-i-learned-today-371d0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672734400651:android:cf7f40c5ce0d2e5cb2848e",
+        "android_client_info": {
+          "package_name": "com.app.learningstoday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "672734400651-06sp7162bddehvnlk2jcn8ea3lhnuhsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUodPa-gYKQ6cZBH-DSnDd8R2HSiM2CdE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "672734400651-06sp7162bddehvnlk2jcn8ea3lhnuhsc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
