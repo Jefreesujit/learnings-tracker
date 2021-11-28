@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, Image, Text, View, Button, TouchableOpacity } from 'react-native';
 
-const Success = ({ navigation }) => {
+const Success = ({ route, navigation }) => {
 
   const addLearning = () => {
-    navigation.navigate('Home', { name: 'Jefree' });
+    navigation.navigate('Home', { uid: route.params.uid });
   };
 
   const viewLearning = () => {
-    navigation.navigate('Timeline', { name: 'Jefree' });
+    navigation.navigate('Timeline', { uid: route.params.uid });
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -10,22 +10,20 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLoginSuccess = (response) => {
-    const uid = response.user.uid;
+  const handleLoginSuccess = (user) => {
+    const uid = user.uid;
     const usersRef = firestore().collection('users');
-    console.log('usersRef', usersRef);
     usersRef.doc(uid).get()
       .then(firestoreDocument => {
         if (!firestoreDocument.exists) {
-          // alert("User does not exist anymore.")
           usersRef.doc(uid).set({
             uid: uid,
-            email: response.user.email || 'Anonymous'
+            email: user.email || 'Anonymous',
+            learnings: []
           });
         }
         setShowInput(false);
-        // const user = firestoreDocument.data()
-        navigation.navigate('Home', { uid })
+        navigation.navigate('Home', { uid });
       })
       .catch(error => {
         alert(error)
@@ -34,8 +32,11 @@ export default function LoginScreen({ navigation }) {
 
   const onAuthStateChanged = (user) => {
     console.log('onAuthStateChanged', user);
-    handleLoginSuccess(user);
-    // if (initializing) setInitializing(false);
+    if (user) {
+      handleLoginSuccess(user)
+    } else {
+      setInitializing(false);
+    };
   }
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function LoginScreen({ navigation }) {
     auth().signInAnonymously()
       .then((response) => {
         console.log('User signed in anonymously', response);
-        handleLoginSuccess(response);
+        handleLoginSuccess(response.user);
       })
       .catch(error => {
         if (error.code === 'auth/operation-not-allowed') {
@@ -65,7 +66,7 @@ export default function LoginScreen({ navigation }) {
       auth().signInWithEmailAndPassword(email, password)
         .then((response) => {
           console.log('User signed in with email', response);
-          handleLoginSuccess(response);
+          handleLoginSuccess(response.user);
         })
         .catch(error => {
           alert(error)
@@ -77,7 +78,7 @@ export default function LoginScreen({ navigation }) {
     navigation.navigate('SignUp')
   }
 
-  // if (initializing) return null;
+  if (initializing) return <View style={styles.wrapper}><Image source={require('../../assets/icon.png')}/></View>;
 
   return (
     <View style={styles.container}>
@@ -131,12 +132,19 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    // backgroundColor: '#fff',
   },
   title: {
-
+    paddingTop: 16,
   },
   logo: {
     flex: 1,
@@ -168,6 +176,18 @@ const styles = StyleSheet.create({
     // marginTop: 20,
     marginBottom: 20,
     height: 48,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: 'center'
+  },
+  googleButton: {
+    marginLeft: 30,
+    marginRight: 30,
+    // marginTop: 20,
+    marginBottom: 20,
+    height: 54,
+    width: 330,
+    textAlign: 'center',
     borderRadius: 5,
     alignItems: "center",
     justifyContent: 'center'
