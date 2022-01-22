@@ -1,24 +1,49 @@
 import React, { useState } from 'react';
 import TagInput from 'react-native-tags-input';
 import { Dimensions, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 
-const Home = ({ navigation }) => {
+const Home = ({ route, navigation }) => {
   const [ learning, setLearning ] = useState('');
   const [tags, setTags] = useState({ tag: '', tagsArray: [] });
 
-  const onSaveLearning = () => {
-    navigation.navigate('Success', { name: 'Jefree' });
+  const onSaveLearning = async () => {
+
+    const uid = route.params.uid;
+    const newLearningItem = {
+      learningText: learning,
+      date: new Date().toISOString(),
+      tags,
+    };
+
+    const usersRef = firestore().collection('users');
+    usersRef.doc(uid).get()
+      .then(fDoc => {
+        console.log('data', fDoc.data());
+        if (learning === '') throw 'Please input some learning';
+        const learningsList = fDoc.data().learnings;
+        usersRef.doc(uid).update({
+          learnings: [...learningsList, newLearningItem]
+        }).then((response) => {
+          setLearning('');
+          navigation.navigate('Success', { uid });
+        }).catch(error => {
+          alert(error);
+        });
+      }).catch(error => {
+        alert(error);
+      });
   };
 
   const viewLearning = () => {
-    navigation.navigate('Timeline', { name: 'Jefree' });
+    navigation.navigate('Timeline', { uid: route.params.uid });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.learningSection}>
         <View style={styles.titleSection}>
-          <Text style={styles.welcomeTitle}>Welcome Jefree,</Text>
+          <Text style={styles.welcomeTitle}>Welcome Learner,</Text>
           <TouchableOpacity onPress={viewLearning}>
             <Text style={styles.navLink}>My Timeline</Text>
           </TouchableOpacity>

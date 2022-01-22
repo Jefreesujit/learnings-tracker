@@ -1,21 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import TimelineList from 'react-native-timeline-flatlist'
+import firestore from '@react-native-firebase/firestore';
 
-const data = [
-  { time: 'Oct 30, 2021', title: 'Event 1', description: 'Event 1 Description Event 1 Description Event 1 Description Event 1 Description' },
-  { time: 'Oct 29, 2021', title: 'Event 2', description: 'Event 2 Description Event 1 Description Event 1 Description' },
-  { time: 'Oct 29, 2021', title: 'Event 3', description: 'Event 3 Description Event 1 Description' },
-  { time: 'Oct 27, 2021', title: 'Event 4', description: 'Event 4 Description Event 1 Description Event 1 Description Event 1 Description' },
-  { time: 'Oct 24, 2021', title: 'Event 5', description: 'Event 5 Description Event 1 Description' },
-  { time: 'Oct 20, 2021', title: 'Event 6', description: 'Event 1 Description Event 1 Description Event 1 Description Event 1 Description' },
-  { time: 'Oct 19, 2021', title: 'Event 7', description: 'Event 2 Description Event 1 Description Event 1 Description' },
-  { time: 'Oct 19, 2021', title: 'Event 8', description: 'Event 3 Description Event 1 Description' },
-  { time: 'Oct 17, 2021', title: 'Event 9', description: 'Event 4 Description Event 1 Description Event 1 Description Event 1 Description' },
-  { time: 'Oct 14, 2021', title: 'Event 10', description: 'Event 5 Description Event 1 Description' }
-];
+const formatData = (data) => data.reverse().çmap(d => {
+  const date = new Date(d.date).toDateString();
+  return {
+    time: date.substring(date.indexOf(' ') + 1),
+    description: d.learningText,
+    title: d.tags
+  };
+});
 
-const Timeline = () => {
+const Timeline = ({ route, navigation }) => {
+  const [timelineData, setTimelineData] = useState([]);
+
+  useEffect(() => {
+    const usersRef = firestore().collection('users');
+    const uid = route.params.uid;
+    usersRef.doc(uid).get()
+      .then(fDoc => {
+        console.log('data', fDoc.data(), uid);
+        const learningsList = fDoc.data().learnings;
+        setTimelineData(formatData(learningsList));
+      }).catch(error => {
+        alert(error);
+      });
+  }, []);
 
   const renderDetail = (rowData, sectionID, rowID) => {
     let title = <Text style={[styles.rowTitle]}>{rowData.time}</Text>
@@ -40,7 +51,7 @@ const Timeline = () => {
       <Text style={styles.sectionTitle}>Your learning timeline:</Text>
       <TimelineList
         style={styles.timelineStyle}
-        data={data}
+        data={timelineData}
         circleSize={25}
         circleColor='#80c905'
         lineColor='#80c905'
@@ -70,7 +81,8 @@ const styles = StyleSheet.create({
     margin: 16
   },
   timelineStyle: {
-    margin: 24,
+    margin: 8,
+    marginTop: 24
   },
   timeContainerStyle: {
     minWidth: 74,
