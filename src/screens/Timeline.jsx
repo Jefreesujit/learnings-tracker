@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import TimelineList from 'react-native-timeline-flatlist'
 import firestore from '@react-native-firebase/firestore';
 
-const formatData = (data) => data.reverse().çmap(d => {
+const formatData = (data) => data.reverse().map(d => {
   const date = new Date(d.date).toDateString();
   return {
     time: date.substring(date.indexOf(' ') + 1),
