@@ -3,6 +3,7 @@ import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, ActivityInd
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { getDeviceStats } from '../utils';
 
 export default function LoginScreen({ navigation }) {
   const [initializing, setInitializing] = useState(true);
@@ -10,20 +11,38 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const navigateToHome = (data) => {
+    navigation.reset({
+      index: 0,
+      routes: [{
+        name: 'Home',
+        params: { ...data }
+      }]
+    });
+  }
+
   const handleLoginSuccess = (user) => {
     const uid = user.uid;
     const usersRef = firestore().collection('users');
+    const deviceStats = getDeviceStats();
+
     usersRef.doc(uid).get()
       .then(firestoreDocument => {
         if (!firestoreDocument.exists) {
           usersRef.doc(uid).set({
             uid: uid,
             email: user.email || 'Anonymous',
-            learnings: []
+            learnings: [],
+            ...deviceStats,
+          });
+        } else {
+          const fData = firestoreDocument.data();
+          usersRef.doc(uid).update({
+            ...deviceStats,
           });
         }
         setShowInput(false);
-        navigation.navigate('Home', { uid });
+        navigateToHome({ uid });
       })
       .catch(error => {
         alert(error)
