@@ -14,6 +14,16 @@ export default function RegistrationScreen({ navigation }) {
     navigation.navigate('Login')
   }
 
+  const navigateToHome = (data) => {
+    navigation.reset({
+      index: 0,
+      routes: [{
+        name: 'Home',
+        params: { ...data }
+      }]
+    });
+  }
+
   const onRegisterPress = () => {
     if (password !== confirmPassword) {
       alert("Passwords don't match.")
@@ -31,7 +41,7 @@ export default function RegistrationScreen({ navigation }) {
         const usersRef = firestore().collection('users')
         usersRef.doc(uid).set(data)
           .then(() => {
-            navigation.navigate('Home', { ...data });
+            navigation.navigate('Login', { ...data });
           })
           .catch((error) => {
             alert(error)
