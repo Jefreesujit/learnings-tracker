@@ -1,4 +1,5 @@
 import DeviceInfo from 'react-native-device-info';
+import { learningQuotes } from '../constants';
 
 export const getDeviceStats = () => {
   console.log('Getting Device Stats');
@@ -20,4 +21,10 @@ export const getDeviceStats = () => {
     // phoneNumber: DeviceInfo.getPhoneNumberSync(),
     tablet: DeviceInfo.isTablet(),
   }
+};
+
+export const getLearningQuote = () => {
+  const length = learningQuotes.length;
+  const randomNumber = Math.floor((Math.random() * length));
+  return learningQuotes[randomNumber];
 };

@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Image, Text, View, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, Text, View, Button, TouchableOpacity, StatusBar } from 'react-native';
+import { getLearningQuote } from '../utils';
 
 const Success = ({ route, navigation }) => {
 
@@ -11,19 +12,22 @@ const Success = ({ route, navigation }) => {
     navigation.navigate('Timeline', { uid: route.params.uid });
   };
 
+  const { quote, by } = getLearningQuote();
+
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
       <Text style={styles.successText}>Successfully added to your learnings</Text>
       <Image
         style={styles.successIcon}
         source={require('../../assets/icon-check.png')}
       />
-      <Text style={styles.learningQuote}>“The beautiful thing about learning is that nobody can take it away from you.” ― B.B. King</Text>
+      <Text style={styles.learningQuote}>“{quote}” ― {by}</Text>
       <TouchableOpacity onPress={addLearning}>
         <Text style={styles.navLink}>Note down another learning</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={viewLearning}>
-        <Text style={styles.navLink}>View my learnings timeline</Text>
+        <Text style={styles.navLink}>View your learnings timeline</Text>
       </TouchableOpacity>
     </View>
   );
