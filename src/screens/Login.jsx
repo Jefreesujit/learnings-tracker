@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -10,6 +10,7 @@ export default function LoginScreen({ navigation }) {
   const [showInput, setShowInput] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  let hasTriggered = false;
 
   const navigateToHome = (data) => {
     navigation.reset({
@@ -21,7 +22,7 @@ export default function LoginScreen({ navigation }) {
     });
   }
 
-  const handleLoginSuccess = (user) => {
+  const handleLoginSuccess = (user, source) => {
     const uid = user.uid;
     const usersRef = firestore().collection('users');
     const deviceStats = getDeviceStats();
@@ -41,6 +42,7 @@ export default function LoginScreen({ navigation }) {
             ...deviceStats,
           });
         }
+        console.log('Source', source, hasTriggered);
         setShowInput(false);
         navigateToHome({ uid });
       })
@@ -52,7 +54,10 @@ export default function LoginScreen({ navigation }) {
   const onAuthStateChanged = (user) => {
     console.log('onAuthStateChanged', user);
     if (user) {
-      handleLoginSuccess(user)
+      if (!hasTriggered) {
+        hasTriggered = true;
+        handleLoginSuccess(user, 'AuthState');
+      }
     } else {
       setInitializing(false);
     };
@@ -67,7 +72,7 @@ export default function LoginScreen({ navigation }) {
     auth().signInAnonymously()
       .then((response) => {
         console.log('User signed in anonymously', response);
-        handleLoginSuccess(response.user);
+        handleLoginSuccess(response.user, 'Anonymous SignIn');
       })
       .catch(error => {
         if (error.code === 'auth/operation-not-allowed') {
@@ -85,7 +90,7 @@ export default function LoginScreen({ navigation }) {
       auth().signInWithEmailAndPassword(email, password)
         .then((response) => {
           console.log('User signed in with email', response);
-          handleLoginSuccess(response.user);
+          handleLoginSuccess(response.user, 'Email SignIn');
         })
         .catch(error => {
           alert(error)
@@ -101,6 +106,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
       <KeyboardAwareScrollView
         style={{ flex: 1, width: '100%' }}
         keyboardShouldPersistTaps="always">
