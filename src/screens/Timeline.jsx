@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import React, { useState, useEffect, Fragment } from 'react';
+import { StyleSheet, Text, View, TextInput, SafeAreaView, StatusBar } from 'react-native';
 import TimelineList from 'react-native-timeline-flatlist'
 import firestore from '@react-native-firebase/firestore';
 
 const formatData = (data) => data.reverse().map(d => {
-  const date = new Date(d.date).toDateString();
-  const time = new Date(d.date).toLocaleString('en-US', {
-    hour: 'numeric', minute: 'numeric', hour12: true,
-  });
+  // const date = new Date(d.date).toDateString();
+  const [
+    day, month, date, time, year,
+  ] = new Date(d.date).toLocaleString('en-US').split(' ');
   return {
-    time: `${time}, ${date.substring(date.indexOf(' ') + 1)}`,
+    time: `${time}, ${month} ${date} ${year}`,
     description: d.learningText,
     tags: d.tags.tagsArray
   };
@@ -87,6 +87,7 @@ const Timeline = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
       <Text style={styles.sectionTitle}>Timeline</Text>
       <TextInput
         style={styles.input}
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     borderColor: 'gray',
     borderWidth: 1,
-    fontSize: 16
+    fontSize: 16,
   },
   tag: {
     borderColor: '#80c905',

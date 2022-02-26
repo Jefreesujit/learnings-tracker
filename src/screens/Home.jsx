@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import TagInput from 'react-native-tags-input';
-import { Dimensions, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const Home = ({ route, navigation }) => {
   const [ learning, setLearning ] = useState('');
@@ -40,49 +41,57 @@ const Home = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.learningSection}>
-        <View style={styles.titleSection}>
-          <Text style={styles.welcomeTitle}>Welcome Learner,</Text>
-          <TouchableOpacity onPress={viewLearning}>
-            <Text style={styles.navLink}>My Timeline</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.questionText}>What did you learn today?</Text>
-        <TextInput
-          style={styles.learningText}
-          multiline
-          numberOfLines={4}
-          padding={24}
-          placeholder="Enter text.."
-          onChangeText={text => setLearning(text)}
-          value={learning}
-          editable
-          />
-        <TagInput
-          updateState={setTags}
-          tags={tags}
-          placeholder="Add labels"
-          inputStyle={styles.tagInput}
-          tagStyle={styles.tag}
-          tagTextStyle={styles.tagText}
-        />
-      </View>
-      <View style={styles.actionContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={onSaveLearning}>
-          <Text style={styles.saveButtonText}>Save Learnings</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <Fragment>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
+        <KeyboardAwareScrollView
+          style={{ width: '100%' }}
+          keyboardShouldPersistTaps="always">
+          <View style={styles.learningSection}>
+            <View style={styles.titleSection}>
+              <Text style={styles.welcomeTitle}>Welcome Learner,</Text>
+              <TouchableOpacity onPress={viewLearning}>
+                <Text style={styles.navLink}>Your Timeline</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.questionText}>What did you learn today?</Text>
+            <TextInput
+              style={styles.learningText}
+              multiline
+              numberOfLines={4}
+              padding={24}
+              placeholder="Enter text.."
+              onChangeText={text => setLearning(text)}
+              value={learning}
+              editable
+              />
+            <TagInput
+              updateState={setTags}
+              tags={tags}
+              placeholder="Add labels"
+              inputStyle={styles.tagInput}
+              tagStyle={styles.tag}
+              tagTextStyle={styles.tagText}
+            />
+          </View>
+          <View style={styles.actionContainer}>
+            <TouchableOpacity style={styles.saveButton} onPress={onSaveLearning}>
+              <Text style={styles.saveButtonText}>Save Learnings</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
+    </Fragment>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // flexDirection: 'column',
     backgroundColor: '#fff',
     // alignItems: 'center',
-    // justifyContent: 'center',
+    // justifyContent: 'space-between',
   },
   learningSection: {
     margin: 16,
@@ -103,7 +112,8 @@ const styles = StyleSheet.create({
     height: 260,
     lineHeight: 34,
     paddingTop: 24,
-    includeFontPadding: true
+    includeFontPadding: true,
+    textAlignVertical: 'top'
   },
   welcomeTitle: {
     marginTop: 8,
@@ -123,11 +133,11 @@ const styles = StyleSheet.create({
   },
   tagText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
   },
   tagInput: {
-    fontSize: 24,
-    margin: 8
+    fontSize: 20,
+    margin: 4
   },
   saveButton: {
     width: '100%',
