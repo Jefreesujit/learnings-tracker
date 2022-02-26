@@ -64,6 +64,6 @@
     <key>UIRequiresFullScreen</key>
     <true/>
     <key>CFBundleDisplayName</key>
-    <string>LearningsToday</string>
+    <string>Learnings Today</string>
   </dict>
 </plist>
