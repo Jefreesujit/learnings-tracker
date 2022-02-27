@@ -35,14 +35,14 @@ function Navigator() {
         name="Home"
         component={Home}
         options={{
-          title: 'Learnings App',
+          title: 'Learnings Today',
         }}
       />
       <Stack.Screen
         name="Timeline"
         component={Timeline}
         options={{
-          title: 'My Timeline',
+          title: 'Learnings Timeline',
         }}
       />
       <Stack.Screen
