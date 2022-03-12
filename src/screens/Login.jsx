@@ -3,6 +3,7 @@ import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar }
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { RFValue } from "react-native-responsive-fontsize";
 import { getDeviceStats } from '../utils';
 
 export default function LoginScreen({ navigation }) {
@@ -117,9 +118,9 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => handleAnonymousSignIn()}>
-          <Text style={styles.buttonTitle}>Log in Anonymously</Text>
+          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Log in Anonymously</Text>
         </TouchableOpacity>
-        <Text style={styles.separator}> ------------- OR ------------- </Text>
+        <Text adjustsFontSizeToFit style={styles.separator}> ------------- OR ------------- </Text>
         { showInput && (
           <>
           <TextInput
@@ -146,10 +147,10 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => onLoginPress()}>
-          <Text style={styles.buttonTitle}>Log in with Email</Text>
+          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Log in with Email</Text>
         </TouchableOpacity>
         <View style={styles.footerView}>
-          <Text style={styles.footerText}>Don't have an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Sign up</Text></Text>
+          <Text adjustsFontSizeToFit style={styles.footerText}>Don't have an account? <Text adjustsFontSizeToFit onPress={onFooterLinkPress} style={styles.footerLink}>Sign up</Text></Text>
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     color: 'white',
-    fontSize: 16,
+    fontSize: RFValue(16),
     fontWeight: "bold"
   },
   footerView: {
@@ -228,12 +229,12 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   footerText: {
-    fontSize: 16,
+    fontSize: RFValue(16),
     color: '#2e2e2d'
   },
   footerLink: {
     color: "#80c905",
     fontWeight: "bold",
-    fontSize: 16
+    fontSize: RFValue(16)
   }
 });

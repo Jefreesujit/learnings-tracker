@@ -3,6 +3,7 @@ import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar }
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { RFValue } from "react-native-responsive-fontsize";
 
 export default function RegistrationScreen({ navigation }) {
   const [fullName, setFullName] = useState('')
@@ -103,10 +104,10 @@ export default function RegistrationScreen({ navigation }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => onRegisterPress()}>
-          <Text style={styles.buttonTitle}>Create account</Text>
+          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Create account</Text>
         </TouchableOpacity>
         <View style={styles.footerView}>
-          <Text style={styles.footerText}>Already got an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
+          <Text adjustsFontSizeToFit style={styles.footerText}>Already got an account? <Text adjustsFontSizeToFit onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     color: 'white',
-    fontSize: 16,
+    fontSize: RFValue(16),
     fontWeight: "bold"
   },
   footerView: {
@@ -160,12 +161,12 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   footerText: {
-    fontSize: 16,
+    fontSize: RFValue(16),
     color: '#2e2e2d'
   },
   footerLink: {
     color: "#80c905",
     fontWeight: "bold",
-    fontSize: 16
+    fontSize: RFValue(16)
   }
 })
