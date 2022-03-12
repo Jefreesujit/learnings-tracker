@@ -39,7 +39,7 @@ function Auth() {
     return (
       <View>
         <TouchableOpacity onPress={handleSignIn}>
-          <Text style={styles.navLink}>Login</Text>
+          <Text adjustsFontSizeToFit style={styles.navLink}>Login</Text>
         </TouchableOpacity>
       </View>
     );

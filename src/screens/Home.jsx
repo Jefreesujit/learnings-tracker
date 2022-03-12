@@ -3,6 +3,7 @@ import TagInput from 'react-native-tags-input';
 import { Dimensions, StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { RFValue } from "react-native-responsive-fontsize";
 
 const Home = ({ route, navigation }) => {
   const [ learning, setLearning ] = useState('');
@@ -27,6 +28,7 @@ const Home = ({ route, navigation }) => {
           learnings: [...learningsList, newLearningItem]
         }).then((response) => {
           setLearning('');
+          setTags({ tag: '', tagsArray: [] });
           navigation.navigate('Success', { uid });
         }).catch(error => {
           alert(error);
@@ -49,12 +51,12 @@ const Home = ({ route, navigation }) => {
           keyboardShouldPersistTaps="always">
           <View style={styles.learningSection}>
             <View style={styles.titleSection}>
-              <Text style={styles.welcomeTitle}>Welcome Learner,</Text>
+              <Text adjustsFontSizeToFit style={styles.welcomeTitle}>Welcome Learner,</Text>
               <TouchableOpacity onPress={viewLearning}>
-                <Text style={styles.navLink}>Your Timeline</Text>
+                <Text adjustsFontSizeToFit style={styles.navLink}>Timeline</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.questionText}>What did you learn today?</Text>
+            <Text adjustsFontSizeToFit style={styles.questionText}>What did you learn today?</Text>
             <TextInput
               style={styles.learningText}
               multiline
@@ -76,7 +78,7 @@ const Home = ({ route, navigation }) => {
           </View>
           <View style={styles.actionContainer}>
             <TouchableOpacity style={styles.saveButton} onPress={onSaveLearning}>
-              <Text style={styles.saveButtonText}>Save Learnings</Text>
+              <Text adjustsFontSizeToFit style={styles.saveButtonText}>Save Learnings</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>
@@ -98,13 +100,13 @@ const styles = StyleSheet.create({
   },
   questionText: {
     marginTop: 24,
-    fontSize: 48,
+    fontSize: RFValue(48),
     fontWeight: 'bold',
   },
   learningText: {
     marginTop: 36,
     marginBottom: 24,
-    fontSize: 26,
+    fontSize: RFValue(26),
     borderColor: 'gray',
     borderRadius: 32,
     borderStyle: 'dotted',
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
   welcomeTitle: {
     marginTop: 8,
     marginBottom: 12,
-    fontSize: 22,
+    fontSize: RFValue(22),
     alignItems: 'flex-start',
     textAlign: 'left',
     fontWeight: 'bold',
@@ -133,10 +135,10 @@ const styles = StyleSheet.create({
   },
   tagText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: RFValue(18),
   },
   tagInput: {
-    fontSize: 20,
+    fontSize: RFValue(20),
     margin: 4
   },
   saveButton: {
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: RFValue(24),
   },
   titleSection: {
     flexDirection: 'row',
@@ -161,7 +163,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 12,
     padding: 8,
-    fontSize: 16,
+    fontSize: RFValue(16),
     textTransform: 'uppercase',
     fontWeight: 'bold',
     color: '#80c905',

@@ -1,13 +1,15 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useCallback, useEffect, Fragment } from 'react';
 import { StyleSheet, Text, View, TextInput, SafeAreaView, StatusBar } from 'react-native';
-import TimelineList from 'react-native-timeline-flatlist'
+import TimelineList from 'react-native-timeline-flatlist';
 import firestore from '@react-native-firebase/firestore';
+import { RFValue } from "react-native-responsive-fontsize";
 
 const formatData = (data) => data.reverse().map(d => {
   // const date = new Date(d.date).toDateString();
   const [
     day, month, date, time, year,
-  ] = new Date(d.date).toLocaleString('en-US').split(' ');
+  ] = new Date(d.date).toLocaleString().split(' ');
+  console.log(new Date(d.date).toLocaleString());
   return {
     time: `${time}, ${month} ${date} ${year}`,
     description: d.learningText,
@@ -18,13 +20,23 @@ const formatData = (data) => data.reverse().map(d => {
 const Timeline = ({ route, navigation }) => {
   const [timelineData, setTimelineData] = useState([]);
   const [displayData, setDisplayData] = useState([]);
-  // const [search, setSearch] = useState('');
+  const [search, setSearch] = useState('');
 
-  const handleSearch = (search) => {
+  const handleTagClick = useCallback((tag) => {
+    setSearch(tag);
+    console.log('timelineData', timelineData, search);
+    handleSearch(tag);
+  }, [timelineData, search, setSearch]);
+
+  const handleSearch = useCallback(() => {
+    console.log('search', search);
     const searchString = search.trim().toLowerCase();
     console.log(search, searchString);
     if (searchString !== '') {
+      console.log('inside if');
+      console.log('timelineData', timelineData);
       const filterData = timelineData.filter(data => {
+        console.log('inside filter', data);
         const desc = data.description.toLowerCase();
         const tags = data.tags.map(tag => tag.toLowerCase());
         if (desc.indexOf(searchString) !== -1) {
@@ -39,7 +51,7 @@ const Timeline = ({ route, navigation }) => {
     } else {
       setDisplayData(timelineData.reverse());
     }
-  };
+  }, [timelineData, search]);
 
   useEffect(() => {
     const usersRef = firestore().collection('users');
@@ -56,19 +68,19 @@ const Timeline = ({ route, navigation }) => {
       });
   }, []);
 
-  const renderDetail = (rowData, sectionID, rowID) => {
-    let title = <Text style={[styles.rowTitle]}>{rowData.time}</Text>
+  const renderDetail = useCallback((rowData, sectionID, rowID) => {
+    let title = <Text adjustsFontSizeToFit style={[styles.rowTitle]}>{rowData.time}</Text>
     let tags = null;
     var desc = null;
     if (rowData.description) {
       desc = (
         <View style={styles.descriptionContainer}>
-          <Text style={[styles.textDescription]}>{rowData.description}</Text>
+          <Text adjustsFontSizeToFit style={[styles.textDescription]}>{rowData.description}</Text>
         </View>
       )
     }
     if (rowData.tags) {
-      const tagChips = rowData.tags.map(tag => <Text style={[styles.tag]}>{tag}</Text>);
+      const tagChips = rowData.tags.map(tag => <Text adjustsFontSizeToFit onPress={() => handleTagClick(tag)} style={[styles.tag]}>{tag}</Text>);
       tags = (
         <View style={styles.tagsContainer}>
           {tagChips}
@@ -83,18 +95,18 @@ const Timeline = ({ route, navigation }) => {
         {tags}
       </View>
     )
-  };
+  }, [handleTagClick]);
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
-      <Text style={styles.sectionTitle}>Timeline</Text>
+      <Text adjustsFontSizeToFit style={styles.sectionTitle}>Timeline</Text>
       <TextInput
         style={styles.input}
         placeholder='Search'
-        // value={search}
+        value={search}
         placeholderTextColor="#aaaaaa"
-        onChangeText={(text) => handleSearch(text)}
+        onChangeText={(text) => handleTagClick(text)}
         autoCapitalize="none"
       />
       <TimelineList
@@ -131,7 +143,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: RFValue(24),
     margin: 16
   },
   timelineStyle: {
@@ -161,13 +173,13 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     borderColor: 'gray',
     borderWidth: 1,
-    fontSize: 16,
+    fontSize: RFValue(16),
   },
   tag: {
     borderColor: '#80c905',
     height: 32,
     color: '#80c905',
-    fontSize: 16,
+    fontSize: RFValue(16),
     borderWidth: 2,
     borderRadius: 10,
     padding: 5,
@@ -175,13 +187,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   textDescription: {
-    fontSize: 18,
+    fontSize: RFValue(18),
     color: 'white',
   },
   rowTitle: {
     padding: 8,
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: RFValue(16),
     // textTransform: 'uppercase',
     marginTop: -16
   }
