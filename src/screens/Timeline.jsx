@@ -54,6 +54,7 @@ const Timeline = ({ route, navigation }) => {
   }, [timelineData, search]);
 
   useEffect(() => {
+    // console.log('route.params timeline', route.params);
     const usersRef = firestore().collection('users');
     const uid = route.params.uid;
     usersRef.doc(uid).get()

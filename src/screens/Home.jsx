@@ -9,6 +9,8 @@ const Home = ({ route, navigation }) => {
   const [ learning, setLearning ] = useState('');
   const [tags, setTags] = useState({ tag: '', tagsArray: [] });
 
+  console.log('route.params', route.params);
+
   const onSaveLearning = async () => {
 
     const uid = route.params.uid;
