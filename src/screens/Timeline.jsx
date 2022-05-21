@@ -1,17 +1,26 @@
 import React, { useState, useCallback, useEffect, Fragment } from 'react';
-import { StyleSheet, Text, View, TextInput, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TextInput, SafeAreaView, StatusBar, Platform } from 'react-native';
 import TimelineList from 'react-native-timeline-flatlist';
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
 
 const formatData = (data) => data.reverse().map(d => {
   // const date = new Date(d.date).toDateString();
-  const [
-    day, month, date, time, year,
-  ] = new Date(d.date).toLocaleString().split(' ');
-  console.log(new Date(d.date).toLocaleString());
+  let timeString;
+
+  if (Platform.OS == 'android') {
+    const [
+      day, month, date, time, year,
+    ] = new Date(d.date).toLocaleString().split(' ');
+    timeString = `${time}, ${month} ${date} ${year}`;
+  } else {
+    const [
+      day, month, date, year, time,
+    ] = new Date(d.date).toString().split(' ');
+    timeString = `${time}, ${month} ${date} ${year}`;
+  }
   return {
-    time: `${time}, ${month} ${date} ${year}`,
+    time: timeString,
     description: d.learningText,
     tags: d.tags.tagsArray
   };
@@ -28,9 +37,9 @@ const Timeline = ({ route, navigation }) => {
     handleSearch(tag);
   }, [timelineData, search, setSearch]);
 
-  const handleSearch = useCallback(() => {
-    console.log('search', search);
-    const searchString = search.trim().toLowerCase();
+  const handleSearch = useCallback((searchTag) => {
+    console.log('search', searchTag);
+    const searchString = searchTag.trim().toLowerCase();
     console.log(search, searchString);
     if (searchString !== '') {
       console.log('inside if');
@@ -41,7 +50,7 @@ const Timeline = ({ route, navigation }) => {
         const tags = data.tags.map(tag => tag.toLowerCase());
         if (desc.indexOf(searchString) !== -1) {
           return true;
-        } else if (tags.indexOf(searchString) !== -1) {
+        } else if (tags.find(tag => tag.includes(searchString))) {
           return true;
         } else {
           return false;
@@ -81,7 +90,7 @@ const Timeline = ({ route, navigation }) => {
       )
     }
     if (rowData.tags) {
-      const tagChips = rowData.tags.map(tag => <Text adjustsFontSizeToFit onPress={() => handleTagClick(tag)} style={[styles.tag]}>{tag}</Text>);
+      const tagChips = rowData.tags.map(tag => <Text adjustsFontSizeToFit onPress={() => { /* handleTagClick(tag) */ }} style={[styles.tag]}>{tag}</Text>);
       tags = (
         <View style={styles.tagsContainer}>
           {tagChips}
@@ -105,9 +114,9 @@ const Timeline = ({ route, navigation }) => {
       <TextInput
         style={styles.input}
         placeholder='Search'
-        value={search}
+        // value={search}
         placeholderTextColor="#aaaaaa"
-        onChangeText={(text) => handleTagClick(text)}
+        onChangeText={(text) => handleSearch(text)}
         autoCapitalize="none"
       />
       <TimelineList

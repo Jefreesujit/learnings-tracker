@@ -2,21 +2,21 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
 } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
+import DrawerContent from './DrawerContent';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Home from '../screens/Home';
 import Timeline from '../screens/Timeline';
 import Success from '../screens/Success';
+import Settings from '../screens/Settings';
+import About from '../screens/About';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
 const DrawerScreen = ({ route, navigation }) => {
-  console.log('route params outside', { ...route.params });
   return (
     <Drawer.Navigator
       initialRouteName="Home"
@@ -25,7 +25,9 @@ const DrawerScreen = ({ route, navigation }) => {
         headerStyle: { backgroundColor: '#80c905' },
         activeTintColor: '#80c905',
         itemStyle: { padding: 0 },
+        labelStyle: { backgroundColor: '#80c905' }
       }}
+      drawerContent={DrawerContent}
     >
       <Drawer.Screen
         name="Home"
@@ -40,6 +42,22 @@ const DrawerScreen = ({ route, navigation }) => {
         component={Timeline}
         options={{
           title: 'Timeline',
+        }}
+        initialParams={{ ...route.params }}
+      />
+      <Drawer.Screen
+        name="Settings"
+        component={Settings}
+        options={{
+          title: 'Settings',
+        }}
+        initialParams={{ ...route.params }}
+      />
+      <Drawer.Screen
+        name="About"
+        component={About}
+        options={{
+          title: 'About',
         }}
         initialParams={{ ...route.params }}
       />

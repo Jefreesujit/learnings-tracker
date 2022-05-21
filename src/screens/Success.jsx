@@ -6,11 +6,11 @@ import { getLearningQuote } from '../utils';
 const Success = ({ route, navigation }) => {
 
   const addLearning = () => {
-    navigation.navigate('Home', { uid: route.params.uid });
+    navigation.navigate('Home', { uid: route.params.uid, name: route.params.name });
   };
 
   const viewLearning = () => {
-    navigation.navigate('Timeline', { uid: route.params.uid });
+    navigation.navigate('Timeline', { uid: route.params.uid, name: route.params.name });
   };
 
   const { quote, by } = getLearningQuote();

@@ -1,6 +1,7 @@
 # LearningsToday
 
-A simple app to track and manage your everyday learnings.
+Learnings Today is a simple learnings tracker app that enables you to note down your everyday learnings and helps you to manage them. It also provides a personalised learning timeline for you where you can revisit your learnings and recall them.
+
 
   - One place to store and revist your learnings
   - Simple and lighter UI

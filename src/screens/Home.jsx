@@ -9,7 +9,7 @@ const Home = ({ route, navigation }) => {
   const [ learning, setLearning ] = useState('');
   const [tags, setTags] = useState({ tag: '', tagsArray: [] });
 
-  console.log('route.params', route.params);
+  const userName = (route.params.name || 'Learner').split(' ')[0];
 
   const onSaveLearning = async () => {
 
@@ -23,7 +23,7 @@ const Home = ({ route, navigation }) => {
     const usersRef = firestore().collection('users');
     usersRef.doc(uid).get()
       .then(fDoc => {
-        console.log('data', fDoc.data());
+        // console.log('data', fDoc.data());
         if (learning === '') throw 'Please input some learning';
         const learningsList = fDoc.data().learnings;
         usersRef.doc(uid).update({
@@ -53,7 +53,7 @@ const Home = ({ route, navigation }) => {
           keyboardShouldPersistTaps="always">
           <View style={styles.learningSection}>
             <View style={styles.titleSection}>
-              <Text adjustsFontSizeToFit style={styles.welcomeTitle}>Welcome Learner,</Text>
+              <Text adjustsFontSizeToFit style={styles.welcomeTitle}>Welcome {userName},</Text>
               <TouchableOpacity onPress={viewLearning}>
                 <Text adjustsFontSizeToFit style={styles.navLink}>Timeline</Text>
               </TouchableOpacity>
