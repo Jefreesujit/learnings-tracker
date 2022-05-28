@@ -41,6 +41,7 @@ project.xcworkspace
 
 # Android/IntelliJ
 #
+build
 .idea
 .gradle
 local.properties
@@ -70,9 +71,9 @@ buck-out/
 web-build/
 dist/
 
-android/app/build/*
-!android/app/build/outputs
-android/app/build/outputs/*
-!android/app/build/outputs/apk
-android/app/build/outputs/apk/debug/*
+# android/app/build/*
+# !android/app/build/outputs
+# android/app/build/outputs/*
+# !android/app/build/outputs/apk
+# android/app/build/outputs/apk/debug/*
 # @end expo-cli
