@@ -1,24 +1,27 @@
 import React, { useState, useCallback, useEffect, Fragment } from 'react';
 import { StyleSheet, Text, View, TextInput, SafeAreaView, StatusBar, Platform } from 'react-native';
 import TimelineList from 'react-native-timeline-flatlist';
+import InsetShadow from 'react-native-inset-shadow'
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
 
 const formatData = (data) => data.reverse().map(d => {
   // const date = new Date(d.date).toDateString();
-  let timeString;
+  let day, month, date, time, year;
 
   if (Platform.OS == 'android') {
-    const [
+    [
       day, month, date, time, year,
     ] = new Date(d.date).toLocaleString().split(' ');
-    timeString = `${time}, ${month} ${date} ${year}`;
   } else {
-    const [
+    [
       day, month, date, year, time,
     ] = new Date(d.date).toString().split(' ');
-    timeString = `${time}, ${month} ${date} ${year}`;
   }
+
+  time = time.split(':').slice(0, 2).join(':');
+  const timeString = `${time}, ${month} ${date} ${year}`;
+
   return {
     time: timeString,
     description: d.learningText,
@@ -33,19 +36,18 @@ const Timeline = ({ route, navigation }) => {
 
   const handleTagClick = useCallback((tag) => {
     setSearch(tag);
-    console.log('timelineData', timelineData, search);
-    handleSearch(tag);
+    // console.log('timelineData', timelineData, search);
+    // handleSearch(tag);
   }, [timelineData, search, setSearch]);
 
   const handleSearch = useCallback((searchTag) => {
-    console.log('search', searchTag);
+    // console.log('search', searchTag);
     const searchString = searchTag.trim().toLowerCase();
     console.log(search, searchString);
     if (searchString !== '') {
-      console.log('inside if');
-      console.log('timelineData', timelineData);
+      // console.log('timelineData', timelineData);
       const filterData = timelineData.filter(data => {
-        console.log('inside filter', data);
+        // console.log('inside filter', data);
         const desc = data.description.toLowerCase();
         const tags = data.tags.map(tag => tag.toLowerCase());
         if (desc.indexOf(searchString) !== -1) {
@@ -72,7 +74,6 @@ const Timeline = ({ route, navigation }) => {
         const learningsList = fDoc.data().learnings.reverse();
         setTimelineData(formatData(learningsList));
         setDisplayData(formatData(learningsList));
-        console.log('Set data');
       }).catch(error => {
         alert(error);
       });
@@ -111,27 +112,32 @@ const Timeline = ({ route, navigation }) => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
       <Text adjustsFontSizeToFit style={styles.sectionTitle}>Timeline</Text>
-      <TextInput
-        style={styles.input}
-        placeholder='Search'
-        // value={search}
-        placeholderTextColor="#aaaaaa"
-        onChangeText={(text) => handleSearch(text)}
-        autoCapitalize="none"
-      />
-      <TimelineList
-        style={styles.timelineStyle}
-        data={displayData}
-        circleSize={25}
-        circleColor='#80c905'
-        lineColor='#80c905'
-        lineWidth={4}
-        innerCircle={'dot'}
-        timeContainerStyle={styles.timeContainerStyle}
-        timeStyle={styles.timeStyle}
-        showTime={false}
-        renderDetail={renderDetail}
-      />
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder='Search'
+          // value={search}
+          placeholderTextColor="#aaaaaa"
+          onChangeText={(text) => handleSearch(text)}
+          autoCapitalize="none"
+        />
+      </View>
+      <InsetShadow bottom={false} right={false} left={false}>
+        <TimelineList
+          style={styles.timelineStyle}
+          data={displayData}
+          circleSize={25}
+          circleColor='#80c905'
+          lineColor='#80c905'
+          lineWidth={4}
+          innerCircle={'dot'}
+          listViewContainerStyle={styles.listViewContainer}
+          timeContainerStyle={styles.timeContainerStyle}
+          timeStyle={styles.timeStyle}
+          showTime={false}
+          renderDetail={renderDetail}
+        />
+      </InsetShadow>
     </View>
   );
 }
@@ -143,7 +149,13 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
+    paddingLeft: 0,
+    paddingRight: 0,
     width: '100%'
+  },
+  searchContainer: {
+    margin: 16,
+    marginBottom: 24,
   },
   tagsContainer: {
     flexDirection: 'row',
@@ -154,16 +166,21 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontWeight: 'bold',
     fontSize: RFValue(24),
-    margin: 16
+    marginLeft: 32,
+    marginTop: 150,
+    marginBottom: 8,
   },
   timelineStyle: {
-    margin: 8,
-    marginTop: 24
+    margin: 24,
+    marginTop: 0
   },
   timeContainerStyle: {
     minWidth: 74,
     marginLeft: -22,
-    marginTop: -2
+    marginTop: -20,
+  },
+  listViewContainer: {
+    marginTop: 24,
   },
   descriptionContainer: {
     padding: 16,
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     paddingLeft: 16,
-    borderColor: 'gray',
+    borderColor: '#aaaaaa',
     borderWidth: 1,
     fontSize: RFValue(16),
   },

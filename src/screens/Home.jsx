@@ -9,7 +9,7 @@ const Home = ({ route, navigation }) => {
   const [ learning, setLearning ] = useState('');
   const [tags, setTags] = useState({ tag: '', tagsArray: [] });
 
-  const userName = (route.params.name || 'Learner').split(' ')[0];
+  const userName = (route.params.name || 'Learner').split(' ')[0].substring(0, 8);
 
   const onSaveLearning = async () => {
 
@@ -31,7 +31,7 @@ const Home = ({ route, navigation }) => {
         }).then((response) => {
           setLearning('');
           setTags({ tag: '', tagsArray: [] });
-          navigation.navigate('Success', { uid });
+          navigation.navigate('Success', { uid, name: route.params.name });
         }).catch(error => {
           alert(error);
         });

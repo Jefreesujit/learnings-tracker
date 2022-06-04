@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: RFValue(24),
     margin: 16,
-    marginTop: 32,
+    marginTop: 64,
     alignSelf: 'center',
     textAlign: 'center',
     color: 'gray',
