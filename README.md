@@ -1,6 +1,7 @@
 # LearningsToday
 
-A simple app to track and manage your everyday learnings.
+Learnings Today is a simple learnings tracker app that enables you to note down your everyday learnings and helps you to manage them. It also provides a personalised learning timeline for you where you can revisit your learnings and recall them.
+
 
   - One place to store and revist your learnings
   - Simple and lighter UI
@@ -10,8 +11,13 @@ A simple app to track and manage your everyday learnings.
 
 ### New Features
 
-  - Anonymous Login
-  - Learnings now shows in latest to old order
+  - Supports Left Drawer for Easy Navigation
+  - Added Settings and About page
+  - Support to filter learnings by Labels
+  - Allow linking of existing anonymous accounts with email accounts
+  - Added support for password change (Email users)
+  - Added support for logout and switch accounts
+  - Improved timeline UI
   - Fixed minor bugs
 
 ### Tech
@@ -63,10 +69,11 @@ http://localhost:8081/debugger-ui
 
 ##### Todos
 
+ - Dark Theme!
  - Support Social Logins
  - Improved UI for timeline
- - Support to filter learnings by tags
- - Integrate with Google Analytics
+ - Sort learnings by date
+ - Integrate with Analytics
 
 ### License
 ----

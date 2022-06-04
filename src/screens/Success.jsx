@@ -6,11 +6,11 @@ import { getLearningQuote } from '../utils';
 const Success = ({ route, navigation }) => {
 
   const addLearning = () => {
-    navigation.navigate('Home', { uid: route.params.uid });
+    navigation.navigate('Home', { uid: route.params.uid, name: route.params.name });
   };
 
   const viewLearning = () => {
-    navigation.navigate('Timeline', { uid: route.params.uid });
+    navigation.navigate('Timeline', { uid: route.params.uid, name: route.params.name });
   };
 
   const { quote, by } = getLearningQuote();
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: RFValue(24),
     margin: 16,
-    marginTop: 32,
+    marginTop: 64,
     alignSelf: 'center',
     textAlign: 'center',
     color: 'gray',

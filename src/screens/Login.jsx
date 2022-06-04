@@ -8,23 +8,27 @@ import { getDeviceStats } from '../utils';
 
 export default function LoginScreen({ navigation }) {
   const [initializing, setInitializing] = useState(true);
-  const [showInput, setShowInput] = useState(false);
+  const [showEmailInput, setShowEmailInput] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   let hasTriggered = false;
 
   const navigateToHome = (data) => {
     navigation.reset({
       index: 0,
       routes: [{
-        name: 'Home',
+        name: 'Drawer',
         params: { ...data }
       }]
     });
+    // navigation.navigate('Drawer', { ...data });
   }
 
   const handleLoginSuccess = (user, source) => {
     const uid = user.uid;
+    let name = fullName || 'Learner';
     const usersRef = firestore().collection('users');
     const deviceStats = getDeviceStats();
 
@@ -34,6 +38,7 @@ export default function LoginScreen({ navigation }) {
           usersRef.doc(uid).set({
             uid: uid,
             email: user.email || 'Anonymous',
+            fullName: name,
             learnings: [],
             ...deviceStats,
           });
@@ -42,10 +47,11 @@ export default function LoginScreen({ navigation }) {
           usersRef.doc(uid).update({
             ...deviceStats,
           });
+          name = fData.fullName;
         }
-        console.log('Source', source, hasTriggered);
-        setShowInput(false);
-        navigateToHome({ uid });
+        setShowNameInput(false);
+        setShowEmailInput(false);
+        navigateToHome({ uid, name });
       })
       .catch(error => {
         alert(error)
@@ -70,22 +76,29 @@ export default function LoginScreen({ navigation }) {
   }, []);
 
   const handleAnonymousSignIn = () => {
-    auth().signInAnonymously()
-      .then((response) => {
-        console.log('User signed in anonymously', response);
-        handleLoginSuccess(response.user, 'Anonymous SignIn');
-      })
-      .catch(error => {
-        if (error.code === 'auth/operation-not-allowed') {
-          console.log('Enable anonymous in your firebase console.');
-        }
-        console.error(error);
-      });
+    if (!showNameInput) {
+      setShowNameInput(true);
+      setShowEmailInput(false);
+    }
+    else {
+      auth().signInAnonymously()
+        .then((response) => {
+          console.log('User signed in anonymously', response);
+          handleLoginSuccess(response.user, 'Anonymous SignIn');
+        })
+        .catch(error => {
+          if (error.code === 'auth/operation-not-allowed') {
+            console.log('Enable anonymous in your firebase console.');
+          }
+          console.error(error);
+        });
+    }
   }
 
   const onLoginPress = () => {
-    if (!showInput) {
-      setShowInput(true);
+    if (!showEmailInput) {
+      setShowEmailInput(true);
+      setShowNameInput(false);
     }
     else {
       auth().signInWithEmailAndPassword(email, password)
@@ -115,13 +128,7 @@ export default function LoginScreen({ navigation }) {
           style={styles.logo}
           source={require('../../assets/icon.png')}
         />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleAnonymousSignIn()}>
-          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Log in Anonymously</Text>
-        </TouchableOpacity>
-        <Text adjustsFontSizeToFit style={styles.separator}> ------------- OR ------------- </Text>
-        { showInput && (
+        { showEmailInput && (
           <>
           <TextInput
             style={styles.input}
@@ -148,6 +155,23 @@ export default function LoginScreen({ navigation }) {
           style={styles.button}
           onPress={() => onLoginPress()}>
           <Text adjustsFontSizeToFit style={styles.buttonTitle}>Log in with Email</Text>
+        </TouchableOpacity>
+        <Text adjustsFontSizeToFit style={styles.separator}> ------------- OR ------------- </Text>
+        {showNameInput && (
+          <TextInput
+            style={styles.input}
+            placeholder='Nickname (Optional)'
+            placeholderTextColor="#aaaaaa"
+            onChangeText={(text) => setFullName(text)}
+            value={fullName}
+            underlineColorAndroid="transparent"
+            autoCapitalize="none"
+          />
+        )}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleAnonymousSignIn()}>
+          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Log in Anonymously</Text>
         </TouchableOpacity>
         <View style={styles.footerView}>
           <Text adjustsFontSizeToFit style={styles.footerText}>Don't have an account? <Text adjustsFontSizeToFit onPress={onFooterLinkPress} style={styles.footerLink}>Sign up</Text></Text>
