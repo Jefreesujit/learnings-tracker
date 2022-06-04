@@ -13,6 +13,7 @@ const formatData = (data) => data.reverse().map(d => {
     [
       day, month, date, time, year,
     ] = new Date(d.date).toLocaleString().split(' ');
+
   } else {
     [
       day, month, date, year, time,
@@ -20,6 +21,7 @@ const formatData = (data) => data.reverse().map(d => {
   }
 
   time = time.split(':').slice(0, 2).join(':');
+  console.log('hello date', time, month, date, year);
   const timeString = `${time}, ${month} ${date} ${year}`;
 
   return {
@@ -70,7 +72,7 @@ const Timeline = ({ route, navigation }) => {
     const uid = route.params.uid;
     usersRef.doc(uid).get()
       .then(fDoc => {
-        // console.log('data', fDoc.data(), uid);
+        console.log('data', fDoc.data(), uid);
         const learningsList = fDoc.data().learnings.reverse();
         setTimelineData(formatData(learningsList));
         setDisplayData(formatData(learningsList));
@@ -206,10 +208,11 @@ const styles = StyleSheet.create({
     borderColor: '#80c905',
     height: 32,
     color: '#80c905',
-    fontSize: RFValue(16),
+    fontSize: 16,
     borderWidth: 2,
     borderRadius: 10,
-    padding: 5,
+    padding: 3,
+    paddingLeft: 6,
     margin: 4,
     fontWeight: 'bold',
   },
