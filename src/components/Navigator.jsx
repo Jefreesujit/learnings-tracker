@@ -61,13 +61,6 @@ const DrawerScreen = ({ route, navigation }) => {
         }}
         initialParams={{ ...route.params }}
       />
-      <Drawer.Screen
-        name="Success"
-        component={Success}
-        options={{
-          gestureEnabled: false,
-        }}
-      />
     </Drawer.Navigator>
   );
 }
@@ -87,6 +80,10 @@ function Navigator() {
       <Stack.Screen
         name="SignUp"
         component={SignUp}
+      />
+      <Stack.Screen
+        name="Success"
+        component={Success}
       />
       <Stack.Screen
         name="Drawer"

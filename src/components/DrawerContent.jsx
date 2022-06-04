@@ -7,7 +7,7 @@ import {
 } from '@react-navigation/drawer';
 import auth from '@react-native-firebase/auth';
 
-const hiddenRoutes = ['Success'];
+const hiddenRoutes = [];
 
 const DrawerContent = (props) => {
   const filteredProps = {
