@@ -1,37 +1,80 @@
-## Welcome to GitHub Pages
+# LearningsToday
 
-You can use the [editor on GitHub](https://github.com/Jefreesujit/learnings-tracker/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Learnings Today is a simple learnings tracker app that enables you to note down your everyday learnings and helps you to manage them. It also provides a personalised learning timeline for you where you can revisit your learnings and recall them.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+  - One place to store and revist your learnings
+  - Simple and lighter UI
+  - Supports both Authenticated and Anonymous modes
+  - Ad Free service
+  - Works in all devices (ios and android)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### New Features
 
-```markdown
-Syntax highlighted code block
+  - Supports Left Drawer for Easy Navigation
+  - Added Settings and About page
+  - Support to filter learnings by Labels
+  - Allow linking of existing anonymous accounts with email accounts
+  - Added support for password change (Email users)
+  - Added support for logout and switch accounts
+  - Improved timeline UI
+  - Fixed minor bugs
 
-# Header 1
-## Header 2
-### Header 3
+### Tech
 
-- Bulleted
-- List
+Learnings Today uses few other services to work properly:
 
-1. Numbered
-2. List
+* [React Native] - Super fast native app framework, using JS
+* [Firebase] - For authentication
+* [Firestore] - To store and retrieve data
+* [Bitrise] - To build and release apps
 
-**Bold** and _Italic_ and `Code` text
 
-[Link](url) and ![Image](src)
+### Development
+
+Want to contribute? Great!
+
+Open your favorite Terminal and run these commands.
+
+```
+git clone https://github.com/Jefreesujit/learnings-tracker.git
+```
+```
+npm install
+```
+```
+npm start
+```
+For android:
+```
+npm run android
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+For ios:
+```
+cd ios
+pod install
+cd ..
+```
+```
+npm run ios
+```
 
-### Jekyll Themes
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Jefreesujit/learnings-tracker/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+Verify the debugger running by navigating to your server address in your preferred browser.
 
-### Support or Contact
+```sh
+http://localhost:8081/debugger-ui
+```
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+##### Todos
+
+ - Dark Theme!
+ - Support Social Logins
+ - Improved UI for timeline
+ - Sort learnings by date
+ - Integrate with Analytics
+
+### License
+----
+MIT
