@@ -1,5 +1,16 @@
 import React, { useState, useCallback, useEffect, Fragment } from 'react';
-import { StyleSheet, Text, View, TextInput, SafeAreaView, StatusBar, Platform } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  SafeAreaView,
+  StatusBar,
+  Platform,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
 import TimelineList from 'react-native-timeline-flatlist';
 import InsetShadow from 'react-native-inset-shadow'
 import firestore from '@react-native-firebase/firestore';
@@ -7,11 +18,11 @@ import { RFValue } from "react-native-responsive-fontsize";
 
 const formatData = (data) => data.reverse().map(d => {
   // const date = new Date(d.date).toDateString();
-  let day, month, date, time, year;
+  let day, month, date, time, year, blank;
 
   if (Platform.OS == 'android') {
     [
-      day, month, date, time, year,
+      day, month, blank, date, time, year,
     ] = new Date(d.date).toLocaleString().split(' ');
   } else {
     [
@@ -33,6 +44,34 @@ const Timeline = ({ route, navigation }) => {
   const [timelineData, setTimelineData] = useState([]);
   const [displayData, setDisplayData] = useState([]);
   const [search, setSearch] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const addLearning = () => {
+    navigation.navigate('Home', { uid: route.params.uid, name: route.params.name });
+  };
+
+  const timelinePrefix = route.params.name ? `${route.params.name.split(' ')[0].substring(0, 8)}'s ` : '';
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    const usersRef = firestore().collection('users');
+    const uid = route.params.uid;
+    usersRef.doc(uid).get()
+      .then(fDoc => {
+        // console.log('data', fDoc.data(), uid);
+        const learningsList = fDoc.data().learnings.reverse();
+        setTimelineData(formatData(learningsList));
+        setDisplayData(formatData(learningsList));
+        setRefreshing(false);
+      }).catch(error => {
+        alert(error);
+      });
+  }, []);
+
+  const sortData = useCallback(() => {
+    const reversedData = [...displayData].reverse();
+    setDisplayData(reversedData);
+  });
 
   const handleTagClick = useCallback((tag) => {
     setSearch(tag);
@@ -66,6 +105,7 @@ const Timeline = ({ route, navigation }) => {
 
   useEffect(() => {
     // console.log('route.params timeline', route.params);
+    setRefreshing(true);
     const usersRef = firestore().collection('users');
     const uid = route.params.uid;
     usersRef.doc(uid).get()
@@ -74,6 +114,7 @@ const Timeline = ({ route, navigation }) => {
         const learningsList = fDoc.data().learnings.reverse();
         setTimelineData(formatData(learningsList));
         setDisplayData(formatData(learningsList));
+        setRefreshing(false);
       }).catch(error => {
         alert(error);
       });
@@ -111,33 +152,62 @@ const Timeline = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
-      <Text adjustsFontSizeToFit style={styles.sectionTitle}>Timeline</Text>
       <View style={styles.searchContainer}>
+        <View style={styles.titleSection}>
+          <Text adjustsFontSizeToFit style={styles.sectionTitle}>{timelinePrefix}Timeline</Text>
+          <TouchableOpacity style={styles.sortButton} onPress={sortData}>
+            <Image
+              style={styles.sortIcon}
+              source={require('../../assets/sort-icon.png')}
+            />
+            {/* <Text adjustsFontSizeToFit style={styles.sortButton}>🔃 Sort</Text> */}
+          </TouchableOpacity>
+        </View>
         <TextInput
           style={styles.input}
-          placeholder='Search'
+          placeholder='🔍 Search'
           // value={search}
           placeholderTextColor="#aaaaaa"
           onChangeText={(text) => handleSearch(text)}
           autoCapitalize="none"
         />
       </View>
-      <InsetShadow bottom={false} right={false} left={false}>
-        <TimelineList
-          style={styles.timelineStyle}
-          data={displayData}
-          circleSize={25}
-          circleColor='#80c905'
-          lineColor='#80c905'
-          lineWidth={4}
-          innerCircle={'dot'}
-          listViewContainerStyle={styles.listViewContainer}
-          timeContainerStyle={styles.timeContainerStyle}
-          timeStyle={styles.timeStyle}
-          showTime={false}
-          renderDetail={renderDetail}
-        />
-      </InsetShadow>
+      <View style={styles.timelineContainer}>
+        <InsetShadow containerStyle={styles.insetStyle} bottom={false} right={false} left={false}>
+          {(!refreshing && displayData.length === 0) ? (
+            <View style={styles.noDataContainer}>
+              <Text style={styles.noData}>No Learnings Found</Text>
+              <Text style={styles.noDataCaption}>Start recording some learnings to see in your timeline</Text>
+              <TouchableOpacity onPress={addLearning}>
+                <Text adjustsFontSizeToFit style={styles.navLink}>Add Learnings</Text>
+              </TouchableOpacity>
+            </View>
+          ): (
+          <TimelineList
+            style={styles.timelineStyle}
+            data={displayData}
+            circleSize={25}
+            circleColor='#80c905'
+            lineColor='#80c905'
+            lineWidth={4}
+            innerCircle={'dot'}
+            listViewContainerStyle={styles.listViewContainer}
+            timeContainerStyle={styles.timeContainerStyle}
+            timeStyle={styles.timeStyle}
+            showTime={false}
+            renderDetail={renderDetail}
+            options={{
+              refreshControl: (
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
+              ),
+            }}
+          />
+          )}
+        </InsetShadow>
+      </View>
     </View>
   );
 }
@@ -152,6 +222,42 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     paddingRight: 0,
     width: '100%'
+  },
+  titleSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    textAlign: 'center',
+    alignItems: 'center'
+  },
+  sortButton: {
+    marginTop: 12,
+    marginBottom: 12,
+    padding: 6,
+    fontSize: RFValue(16),
+    color: '#80c905',
+    // backgroundColor: '#80c90528',
+    // textTransform: 'uppercase',
+    fontWeight: 'bold',
+    marginRight: 28,
+    // marginLeft: 24,
+    marginTop: 160,
+    borderWidth: 2,
+    borderColor: '#80c905',
+    borderRadius: 6,
+  },
+  sortIcon: {
+    width: 26,
+    height: 22,
+    padding: 4,
+  },
+  timelineContainer: {
+    marginBottom: 150,
+  },
+  actionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    textAlign: 'center',
+    alignItems: 'center'
   },
   searchContainer: {
     margin: 16,
@@ -168,7 +274,9 @@ const styles = StyleSheet.create({
     fontSize: RFValue(24),
     marginLeft: 32,
     marginTop: 150,
-    marginBottom: 8,
+    marginBottom: 16,
+    paddingTop: 16,
+    textTransform: 'capitalize',
   },
   timelineStyle: {
     margin: 24,
@@ -178,6 +286,9 @@ const styles = StyleSheet.create({
     minWidth: 74,
     marginLeft: -22,
     marginTop: -20,
+  },
+  insetStyle: {
+    marginBottom: 48,
   },
   listViewContainer: {
     marginTop: 24,
@@ -189,7 +300,7 @@ const styles = StyleSheet.create({
     margin: 8
   },
   input: {
-    height: 40,
+    height: 48,
     borderRadius: 5,
     overflow: 'hidden',
     backgroundColor: 'white',
@@ -198,8 +309,8 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     paddingLeft: 16,
-    borderColor: '#aaaaaa',
-    borderWidth: 1,
+    borderColor: '#80c905',
+    borderWidth: 2,
     fontSize: RFValue(16),
   },
   tag: {
@@ -224,7 +335,34 @@ const styles = StyleSheet.create({
     fontSize: RFValue(16),
     // textTransform: 'uppercase',
     marginTop: -16
-  }
+  },
+  noDataContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 400,
+  },
+  noData: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'gray',
+  },
+  noDataCaption: {
+    margin: 20,
+    fontSize: 16,
+    color: 'gray',
+    marginLeft: 80,
+    marginRight: 80,
+  },
+  navLink: {
+    marginTop: 8,
+    marginBottom: 12,
+    padding: 8,
+    fontSize: RFValue(16),
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    color: '#80c905',
+    backgroundColor: '#80c90528'
+  },
   // timeStyle: {
   //   textAlign: 'center',
   //   backgroundColor:'#ff9797',
