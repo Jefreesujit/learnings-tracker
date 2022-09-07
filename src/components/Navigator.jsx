@@ -23,9 +23,9 @@ const DrawerScreen = ({ route, navigation }) => {
       screenOptions={{
         headerTintColor: 'white',
         headerStyle: { backgroundColor: '#80c905' },
-        activeTintColor: '#80c905',
-        itemStyle: { padding: 0 },
-        labelStyle: { backgroundColor: '#80c905' }
+        drawerActiveTintColor: '#80c905',
+        drawerActiveBackgroundColor: '#80c90528',
+        drawerLabelStyle: { fontSize: 18, paddingLeft: 8, paddingRight: 8 }
       }}
       drawerContent={DrawerContent}
     >
