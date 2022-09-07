@@ -174,10 +174,10 @@ const Timeline = ({ route, navigation }) => {
       </View>
       <View style={styles.timelineContainer}>
         <InsetShadow containerStyle={styles.insetStyle} bottom={false} right={false} left={false}>
-          {(!refreshing && displayData.length === 0) ? (
+          {(!refreshing && timelineData.length === 0) ? (
             <View style={styles.noDataContainer}>
               <Text style={styles.noData}>No Learnings Found</Text>
-              <Text style={styles.noDataCaption}>Start recording some learnings to see in your timeline</Text>
+              <Text style={styles.noDataCaption}>Click the button below to add your first learning!</Text>
               <TouchableOpacity onPress={addLearning}>
                 <Text adjustsFontSizeToFit style={styles.navLink}>Add Learnings</Text>
               </TouchableOpacity>
