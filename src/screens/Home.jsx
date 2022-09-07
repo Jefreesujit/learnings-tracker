@@ -41,7 +41,7 @@ const Home = ({ route, navigation }) => {
   };
 
   const viewLearning = () => {
-    navigation.navigate('Timeline', { uid: route.params.uid });
+    navigation.navigate('Timeline', { uid: route.params.uid, name: route.params.name });
   };
 
   return (
