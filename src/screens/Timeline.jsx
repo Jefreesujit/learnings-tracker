@@ -31,8 +31,14 @@ const formatData = (data) => data.reverse().map(d => {
     ] = new Date(d.date).toString().split(' ');
   }
 
+  const reqDate = new Date(d.date);
+  time = reqDate.toLocaleTimeString();
   time = time.split(':').slice(0, 2).join(':');
-  const timeString = `${time}, ${month} ${date} ${year}`;
+  const vals = reqDate.toDateString().split(' ');
+  vals.shift();
+  date = vals.join(' ');
+  const timeString = `${time}, ${date}`;
+
 
   return {
     time: timeString,
