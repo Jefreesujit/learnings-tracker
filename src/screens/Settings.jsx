@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react';
+import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar, Switch, AsyncStorage, Platform } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
+import { useTheme, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
+import { ThemeContext } from '../components/ThemeContext';
 
 const Settings = ({ route, navigation }) => {
   const [fullName, setFullName] = useState('');
@@ -12,6 +14,7 @@ const Settings = ({ route, navigation }) => {
   const [password, setPassword] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const { theme, setTheme } = useContext(ThemeContext);
 
   const usersRef = firestore().collection('users');
 
@@ -76,6 +79,19 @@ const Settings = ({ route, navigation }) => {
       alert(error);
     });
   }
+
+  const toggleSwitch = async () => {
+    console.log('toggleSwitch', theme);
+    const newTheme = theme === DefaultTheme ? DarkTheme : DefaultTheme;
+    AsyncStorage.setItem('theme', JSON.stringify(newTheme));
+    setTheme(newTheme);
+  }
+
+  const { colors, dark } = useTheme();
+  const styles = themedStyles(colors);
+
+  const isEnabled = theme.dark === true;
+  console.log('isEnabled', isEnabled, theme);
 
   return (
     <View style={styles.container}>
@@ -162,29 +178,37 @@ const Settings = ({ route, navigation }) => {
         )}
         <View style={styles.themeSection}>
           <Text style={styles.sectionSubTitle}>Dark Theme</Text>
-          <Text>(coming soon)</Text>
+          <Switch
+            style={Platform.OS === 'ios' ? {} : styles.switchStyle}
+            trackColor={{ false: "#767577", true: "#cdcdcd" }}
+            thumbColor={isEnabled ? "#80c905" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={isEnabled} />
         </View>
       </KeyboardAwareScrollView>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const themedStyles = theme => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: theme.background,
   },
   sectionTitle: {
     fontWeight: 'bold',
     fontSize: RFValue(24),
-    margin: 16
+    margin: 16,
+    color: theme.text,
   },
   sectionSubTitle: {
     fontWeight: 'bold',
     fontSize: 18,
     margin: 12,
     marginLeft: 32,
+    color: theme.text,
   },
   warningText: {
     marginLeft: 32,
@@ -201,6 +225,11 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start'
+  },
+  switchStyle: {
+    transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
+    marginLeft: 20,
   },
   logo: {
     flex: 1,
@@ -213,14 +242,15 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 5,
     overflow: 'hidden',
-    backgroundColor: 'white',
+    backgroundColor: theme.background,
+    color: theme.text,
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 30,
     marginRight: 30,
     paddingLeft: 16,
     borderWidth: 1,
-    borderColor: '#aaaaaa',
+    borderColor: 'gray',
   },
   button: {
     backgroundColor: '#80c905',
@@ -245,7 +275,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: RFValue(16),
-    color: '#2e2e2d'
+    color: 'gray',
   },
   footerLink: {
     color: "#80c905",

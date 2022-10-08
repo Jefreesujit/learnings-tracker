@@ -11,6 +11,7 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import TimelineList from 'react-native-timeline-flatlist';
 import InsetShadow from 'react-native-inset-shadow'
 import firestore from '@react-native-firebase/firestore';
@@ -149,6 +150,9 @@ const Timeline = ({ route, navigation }) => {
     )
   }, [handleTagClick]);
 
+  const { colors } = useTheme();
+  const styles = themedStyles(colors);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={'#80c905'} />
@@ -212,10 +216,10 @@ const Timeline = ({ route, navigation }) => {
   );
 }
 
-const styles = StyleSheet.create({
+const themedStyles = theme => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     // alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
@@ -227,7 +231,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     textAlign: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    color: theme.text,
   },
   sortButton: {
     marginTop: 12,
@@ -277,6 +282,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingTop: 16,
     textTransform: 'capitalize',
+    color: theme.text,
   },
   timelineStyle: {
     margin: 24,
@@ -303,7 +309,8 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 5,
     overflow: 'hidden',
-    backgroundColor: 'white',
+    backgroundColor: theme.background,
+    color: theme.text,
     // marginTop: 10,
     // marginBottom: 10,
     marginLeft: 30,
@@ -334,7 +341,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: RFValue(16),
     // textTransform: 'uppercase',
-    marginTop: -16
+    marginTop: -16,
+    color: theme.text,
   },
   noDataContainer: {
     justifyContent: 'center',

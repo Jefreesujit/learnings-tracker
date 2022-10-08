@@ -1,9 +1,14 @@
 import React from 'react';
+import { useColorScheme } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from '@react-navigation/native';
 import DrawerContent from './DrawerContent';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
