@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "672734400651-1pv37narke4rr09jj0tggme9bh3dj6pc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.learningstoday",
+            "certificate_hash": "b75f33919ce8ff31498b2538744f2edb3e7b9b24"
+          }
+        },
+        {
+          "client_id": "672734400651-oqspkjttggfeol3r7vc6lnmufcrsd12i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.learningstoday",
+            "certificate_hash": "2a58be486bddf7b88d482220e8cf30a7fc00997b"
+          }
+        },
+        {
           "client_id": "672734400651-06sp7162bddehvnlk2jcn8ea3lhnuhsc.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +45,13 @@
             {
               "client_id": "672734400651-06sp7162bddehvnlk2jcn8ea3lhnuhsc.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "672734400651-jmjkdrrn2v8htgt34ddagdloiu6q9fho.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.learningstoday"
+              }
             }
           ]
         }
