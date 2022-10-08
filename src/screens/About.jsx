@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, Image, Text, Linking, ScrollView, Button, TouchableOpacity, StatusBar } from 'react-native';
 import { RFValue } from "react-native-responsive-fontsize";
+import { useTheme } from '@react-navigation/native';
 import { borderColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 import { getLearningQuote } from '../utils';
 
-const Success = ({ route, navigation }) => {
+const About = ({ route, navigation }) => {
 
   const addLearning = () => {
     navigation.navigate('Home', { uid: route.params.uid });
@@ -15,6 +16,9 @@ const Success = ({ route, navigation }) => {
   };
 
   const { quote, by } = getLearningQuote();
+
+  const { colors } = useTheme();
+  const styles = themedStyles(colors);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -53,7 +57,7 @@ const Success = ({ route, navigation }) => {
         Jefree Sujit
       </Text>
       <Text adjustsFontSizeToFit style={styles.subHeader}>
-        Testers
+        Tester(s)
       </Text>
       <Text adjustsFontSizeToFit style={styles.listItem}>
         Aatish Daniel
@@ -62,10 +66,10 @@ const Success = ({ route, navigation }) => {
   );
 }
 
-const styles = StyleSheet.create({
+const themedStyles = theme => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     alignItems: 'center',
     justifyContent: 'flex-start',
     // textAlign: 'center',
@@ -78,11 +82,13 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingTop: 8,
     fontSize: 16,
+    color: theme.text,
   },
   subHeader: {
     fontWeight: 'bold',
     fontSize: 18,
     padding: 8,
+    color: theme.text,
   },
   listItem: {
     color: '#80c905',
@@ -95,6 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     textAlign: 'left',
     fontWeight: 'bold',
+    color: theme.text,
   },
   successText: {
     fontSize: RFValue(24),
@@ -119,4 +126,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Success;
+export default About;

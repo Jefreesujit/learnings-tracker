@@ -2,14 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import { useTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 import { RFValue } from "react-native-responsive-fontsize";
 import { getDeviceStats } from '../utils';
+
+GoogleSignin.configure({
+  webClientId: '672734400651-06sp7162bddehvnlk2jcn8ea3lhnuhsc.apps.googleusercontent.com',
+});
 
 export default function LoginScreen({ navigation }) {
   const [initializing, setInitializing] = useState(true);
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
+  const [showGoogleLogin, setShowGoogleLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -29,8 +37,11 @@ export default function LoginScreen({ navigation }) {
   const handleLoginSuccess = (user, source) => {
     const uid = user.uid;
     let name = fullName || 'Learner';
+    let fcmToken;
     const usersRef = firestore().collection('users');
     const deviceStats = getDeviceStats();
+
+    messaging().getToken().then(token => { fcmToken = token });
 
     usersRef.doc(uid).get()
       .then(firestoreDocument => {
@@ -40,12 +51,14 @@ export default function LoginScreen({ navigation }) {
             email: user.email || 'Anonymous',
             fullName: name,
             learnings: [],
+            fcmToken,
             ...deviceStats,
           });
         } else {
           const fData = firestoreDocument.data();
           usersRef.doc(uid).update({
             ...deviceStats,
+            fcmToken,
           });
           name = fData.fullName;
         }
@@ -57,6 +70,13 @@ export default function LoginScreen({ navigation }) {
         alert(error)
       });
   }
+
+  const configureAppSettings = async () => {
+    const configRef = firestore().collection('config');
+    const confDoc = await configRef.doc('settings').get();
+    const { googleLogin } = await confDoc.data();
+    setShowGoogleLogin(googleLogin);
+  };
 
   const onAuthStateChanged = (user) => {
     console.log('onAuthStateChanged', user);
@@ -70,7 +90,8 @@ export default function LoginScreen({ navigation }) {
     };
   }
 
-  useEffect(() => {
+  useEffect(async () => {
+    await configureAppSettings();
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
@@ -95,6 +116,31 @@ export default function LoginScreen({ navigation }) {
     }
   }
 
+  const onGoogleButtonPress = async () => {
+    let idToken;
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      idToken = userInfo.idToken;
+    } catch (error) {
+      console.log('onGoogleError', error);
+    }
+    if (idToken) {
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      auth().signInWithCredential(googleCredential)
+        .then((response) => {
+          console.log('User signed in with google', response);
+          handleLoginSuccess(response.user, 'Google SignIn');
+        })
+        .catch(error => {
+          console.log('error', error);
+          alert(error);
+        });
+    } else {
+      alert('Google sigin failed temporarily, please try after some time.')
+    }
+  }
+
   const onLoginPress = () => {
     if (!showEmailInput) {
       setShowEmailInput(true);
@@ -108,13 +154,16 @@ export default function LoginScreen({ navigation }) {
         })
         .catch(error => {
           alert(error)
-        })
+        });
     }
   }
 
   const onFooterLinkPress = () => {
     navigation.navigate('SignUp')
   }
+
+  const { colors } = useTheme();
+  const styles = themedStyles(colors);
 
   if (initializing) return <View style={styles.wrapper}><Image source={require('../../assets/icon.png')}/></View>;
 
@@ -128,6 +177,14 @@ export default function LoginScreen({ navigation }) {
           style={styles.logo}
           source={require('../../assets/icon.png')}
         />
+        {showGoogleLogin && (
+          <GoogleSigninButton
+            style={styles.googleButton}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            onPress={onGoogleButtonPress}
+          />
+        )}
         { showEmailInput && (
           <>
           <TextInput
@@ -181,17 +238,17 @@ export default function LoginScreen({ navigation }) {
   )
 }
 
-const styles = StyleSheet.create({
+const themedStyles = theme => StyleSheet.create({
   wrapper: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
   },
   container: {
     flex: 1,
     alignItems: 'center',
-    // backgroundColor: '#fff',
+    backgroundColor: theme.background,
   },
   title: {
     paddingTop: 16,
@@ -212,17 +269,20 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 5,
     overflow: 'hidden',
-    backgroundColor: 'white',
+    color: theme.text,
+    backgroundColor: theme.background,
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 30,
     marginRight: 30,
-    paddingLeft: 16
+    paddingLeft: 16,
+    borderColor: '#80c905',
+    borderWidth: 1,
   },
   button: {
     backgroundColor: '#80c905',
-    marginLeft: 30,
-    marginRight: 30,
+    marginLeft: 23,
+    marginRight: 23,
     // marginTop: 20,
     marginBottom: 20,
     height: 48,
@@ -231,16 +291,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   googleButton: {
-    marginLeft: 30,
-    marginRight: 30,
-    // marginTop: 20,
+    marginLeft: 48,
+    marginRight: 32,
     marginBottom: 20,
-    height: 54,
-    width: 330,
+    // height: 54,
+    // width: 360,
     textAlign: 'center',
     borderRadius: 5,
     alignItems: "center",
-    justifyContent: 'center'
+    justifyContent: 'center',
+    fontSize: 20,
+    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
   },
   buttonTitle: {
     color: 'white',
@@ -254,7 +315,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: RFValue(16),
-    color: '#2e2e2d'
+    color: 'gray'
   },
   footerLink: {
     color: "#80c905",

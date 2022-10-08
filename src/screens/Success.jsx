@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, Image, Text, View, Button, TouchableOpacity, StatusBar } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import { RFValue } from "react-native-responsive-fontsize";
 import { getLearningQuote } from '../utils';
 
 const Success = ({ route, navigation }) => {
+  const { colors } = useTheme();
 
   const addLearning = () => {
     navigation.navigate('Home', { uid: route.params.uid, name: route.params.name });
@@ -14,6 +16,8 @@ const Success = ({ route, navigation }) => {
   };
 
   const { quote, by } = getLearningQuote();
+
+  const styles = themedStyles(colors);
 
   return (
     <View style={styles.container}>
@@ -34,10 +38,10 @@ const Success = ({ route, navigation }) => {
   );
 }
 
-const styles = StyleSheet.create({
+const themedStyles = theme => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     alignItems: 'center',
     justifyContent: 'flex-start',
     textAlign: 'center',
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: 'bold',
     textAlign: 'center',
-    // color: '#80c905',
+    color: theme.text,
   },
   navLink: {
     margin: 12,

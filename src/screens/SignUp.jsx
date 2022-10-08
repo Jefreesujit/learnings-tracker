@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
+import { useTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
 
@@ -52,6 +53,9 @@ export default function RegistrationScreen({ navigation }) {
         alert(error)
       });
   }
+
+  const { colors } = useTheme();
+  const styles = themedStyles(colors);
 
   return (
     <View style={styles.container}>
@@ -114,10 +118,11 @@ export default function RegistrationScreen({ navigation }) {
   )
 }
 
-const styles = StyleSheet.create({
+const themedStyles = theme => StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: theme.background,
   },
   title: {
 
@@ -133,12 +138,15 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 5,
     overflow: 'hidden',
-    backgroundColor: 'white',
+    color: theme.text,
+    backgroundColor: theme.background,
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 30,
     marginRight: 30,
-    paddingLeft: 16
+    paddingLeft: 16,
+    borderColor: '#80c905',
+    borderWidth: 1,
   },
   button: {
     backgroundColor: '#80c905',
@@ -162,7 +170,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: RFValue(16),
-    color: '#2e2e2d'
+    color: 'gray'
   },
   footerLink: {
     color: "#80c905",

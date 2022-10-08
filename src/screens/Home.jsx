@@ -1,11 +1,13 @@
 import React, { useState, Fragment } from 'react';
 import TagInput from 'react-native-tags-input';
 import { Dimensions, StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { RFValue } from "react-native-responsive-fontsize";
 
 const Home = ({ route, navigation }) => {
+  const { colors } = useTheme();
   const [ learning, setLearning ] = useState('');
   const [tags, setTags] = useState({ tag: '', tagsArray: [] });
 
@@ -44,6 +46,8 @@ const Home = ({ route, navigation }) => {
     navigation.navigate('Timeline', { uid: route.params.uid, name: route.params.name });
   };
 
+  const styles = themedStyles(colors);
+
   return (
     <Fragment>
       <SafeAreaView style={styles.container}>
@@ -73,6 +77,7 @@ const Home = ({ route, navigation }) => {
               updateState={setTags}
               tags={tags}
               placeholder="Add labels"
+              inputContainerStyle={styles.tagContainer}
               inputStyle={styles.tagInput}
               tagStyle={styles.tag}
               tagTextStyle={styles.tagText}
@@ -89,11 +94,11 @@ const Home = ({ route, navigation }) => {
   );
 }
 
-const styles = StyleSheet.create({
+const themedStyles = theme => StyleSheet.create({
   container: {
     flex: 1,
     // flexDirection: 'column',
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     // alignItems: 'center',
     // justifyContent: 'space-between',
   },
@@ -104,7 +109,12 @@ const styles = StyleSheet.create({
     marginTop: 24,
     fontSize: RFValue(48),
     fontWeight: 'bold',
+    color: theme.text,
   },
+  // tagContainer: {
+  //   borderBottomWidth: 1,
+  //   borderColor: theme.text,
+  // },
   learningText: {
     marginTop: 36,
     marginBottom: 24,
@@ -117,7 +127,8 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     paddingTop: 24,
     includeFontPadding: true,
-    textAlignVertical: 'top'
+    textAlignVertical: 'top',
+    color: theme.text,
   },
   welcomeTitle: {
     marginTop: 8,
@@ -126,6 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     textAlign: 'left',
     fontWeight: 'bold',
+    color: theme.text,
   },
   actionContainer: {
     flex: 1,
@@ -134,14 +146,17 @@ const styles = StyleSheet.create({
   tag: {
     backgroundColor: '#80c905',
     height: 36,
+    color: theme.text,
   },
   tagText: {
-    color: 'white',
+    color: theme.text,
     fontSize: RFValue(18),
   },
   tagInput: {
     fontSize: RFValue(20),
-    margin: 4
+    margin: 4,
+    color: theme.text,
+    borderColor: 'gray',
   },
   saveButton: {
     width: '100%',
@@ -159,7 +174,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     textAlign: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    color: theme.text,
   },
   navLink: {
     marginTop: 8,
