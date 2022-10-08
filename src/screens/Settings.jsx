@@ -250,7 +250,7 @@ const themedStyles = theme => StyleSheet.create({
     marginRight: 30,
     paddingLeft: 16,
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: '#80c905',
   },
   button: {
     backgroundColor: '#80c905',

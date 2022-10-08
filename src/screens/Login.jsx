@@ -5,6 +5,7 @@ import auth from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import { useTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 import { RFValue } from "react-native-responsive-fontsize";
 import { getDeviceStats } from '../utils';
 
@@ -36,8 +37,11 @@ export default function LoginScreen({ navigation }) {
   const handleLoginSuccess = (user, source) => {
     const uid = user.uid;
     let name = fullName || 'Learner';
+    let fcmToken;
     const usersRef = firestore().collection('users');
     const deviceStats = getDeviceStats();
+
+    messaging().getToken().then(token => { fcmToken = token });
 
     usersRef.doc(uid).get()
       .then(firestoreDocument => {
@@ -47,12 +51,14 @@ export default function LoginScreen({ navigation }) {
             email: user.email || 'Anonymous',
             fullName: name,
             learnings: [],
+            fcmToken,
             ...deviceStats,
           });
         } else {
           const fData = firestoreDocument.data();
           usersRef.doc(uid).update({
             ...deviceStats,
+            fcmToken,
           });
           name = fData.fullName;
         }
@@ -119,15 +125,20 @@ export default function LoginScreen({ navigation }) {
     } catch (error) {
       console.log('onGoogleError', error);
     }
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    auth().signInWithCredential(googleCredential)
-      .then((response) => {
-        console.log('User signed in with google', response);
-        handleLoginSuccess(response.user, 'Google SignIn');
-      })
-      .catch(error => {
-        alert(error)
-      });
+    if (idToken) {
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      auth().signInWithCredential(googleCredential)
+        .then((response) => {
+          console.log('User signed in with google', response);
+          handleLoginSuccess(response.user, 'Google SignIn');
+        })
+        .catch(error => {
+          console.log('error', error);
+          alert(error);
+        });
+    } else {
+      alert('Google sigin failed temporarily, please try after some time.')
+    }
   }
 
   const onLoginPress = () => {
@@ -265,7 +276,7 @@ const themedStyles = theme => StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     paddingLeft: 16,
-    borderColor: 'gray',
+    borderColor: '#80c905',
     borderWidth: 1,
   },
   button: {

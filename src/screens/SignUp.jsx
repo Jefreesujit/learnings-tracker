@@ -145,7 +145,7 @@ const themedStyles = theme => StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     paddingLeft: 16,
-    borderColor: 'gray',
+    borderColor: '#80c905',
     borderWidth: 1,
   },
   button: {
