@@ -6,6 +6,7 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 import auth from '@react-native-firebase/auth';
+import { trackLogout } from '../utils/analytics';
 
 const hiddenRoutes = [];
 
@@ -25,6 +26,7 @@ const DrawerContent = (props) => {
   const onLogoutPress = (props) => {
     auth().signOut()
       .then(() => {
+        trackLogout();
         console.log('User signed out!');
         props.navigation.navigate('Login');
       });
@@ -46,7 +48,7 @@ const DrawerContent = (props) => {
       </View>
       <View style={styles.footer}>
         <Text>Learnings Today</Text>
-        <Text>v1.0.3</Text>
+        <Text>v1.0.4</Text>
       </View>
     </DrawerContentScrollView>
   );

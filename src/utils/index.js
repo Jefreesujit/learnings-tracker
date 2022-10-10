@@ -16,9 +16,9 @@ export const getDeviceStats = () => {
     deviceStorage: DeviceInfo.getFreeDiskStorageSync(),
     totalMemory: DeviceInfo.getTotalMemorySync(),
     maxMemory: DeviceInfo.getMaxMemorySync(),
-    // ipAddress: DeviceInfo.getIpAddressSync(),
-    // macAddress: DeviceInfo.getMacAddressSync(),
-    // phoneNumber: DeviceInfo.getPhoneNumberSync(),
+    ipAddress: DeviceInfo.getIpAddressSync(),
+    macAddress: DeviceInfo.getMacAddressSync(),
+    phoneNumber: DeviceInfo.getPhoneNumberSync(),
     tablet: DeviceInfo.isTablet(),
   }
 };

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar, Switch, AsyncStorage, Platform } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar, Switch, AsyncStorage, Platform, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 import { useTheme, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
 import { ThemeContext } from '../components/ThemeContext';
+import { trackEvent } from '../utils/analytics';
 
 const Settings = ({ route, navigation }) => {
   const [fullName, setFullName] = useState('');
@@ -37,6 +38,7 @@ const Settings = ({ route, navigation }) => {
     const uid = route.params.uid;
     usersRef.doc(uid).update({ fullName }).then(() => {
       navigation.setParams({ name: fullName });
+      trackEvent('Change Name');
       alert('Display name updated successfully')
     });
   };
@@ -52,6 +54,7 @@ const Settings = ({ route, navigation }) => {
     reauthenticate(currentPassword).then(() => {
       const user = auth().currentUser;
       user.updatePassword(newPassword).then(() => {
+        trackEvent('Change Password');
         alert("Password changed succesfully");
         setCurrentPassword('');
         setNewPassword('');
@@ -67,17 +70,23 @@ const Settings = ({ route, navigation }) => {
 
   const linkWithCredential = () => {
     const uid = route.params.uid;
-    const cred = auth.EmailAuthProvider.credential(email, password);
-    const user = auth().currentUser;
-    auth().currentUser.linkWithCredential(cred).then((response) => {
-      // console.log('Linked with email', response);
-      alert('Linked with email successfully');
-      setIsAnonymous(false);
-      usersRef.doc(uid).update({ email });
-    }).catch((error) => {
-      console.log(error);
-      alert(error);
-    });
+    if (email && password) {
+      const cred = auth.EmailAuthProvider.credential(email, password);
+      const user = auth().currentUser;
+      auth().currentUser.linkWithCredential(cred).then((response) => {
+        // console.log('Linked with email', response);
+        trackEvent('Link with email');
+        alert('Linked with email successfully');
+        setIsAnonymous(false);
+        usersRef.doc(uid).update({ email });
+      }).catch((error) => {
+        console.log(error);
+        alert(error);
+      });
+    } else {
+      alert("Please enter a valid credentials.");
+      return;
+    }
   }
 
   const toggleSwitch = async () => {
@@ -87,11 +96,36 @@ const Settings = ({ route, navigation }) => {
     setTheme(newTheme);
   }
 
+  const deleteUser = async () => {
+    const uid = route.params.uid;
+    await usersRef.doc(uid).delete();
+    await auth().currentUser.delete();
+    trackEvent('Delete account');
+    console.log('User deleted');
+    navigation.navigate('Login');
+  };
+
+  const handleDeleteAccount = () =>
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Delete",
+          onPress: () => deleteUser(),
+          style: "delete"
+        }
+      ]
+  );
+
   const { colors, dark } = useTheme();
   const styles = themedStyles(colors);
 
   const isEnabled = theme.dark === true;
-  console.log('isEnabled', isEnabled, theme);
 
   return (
     <View style={styles.container}>
@@ -186,6 +220,15 @@ const Settings = ({ route, navigation }) => {
             onValueChange={toggleSwitch}
             value={isEnabled} />
         </View>
+        <View style={styles.divider}></View>
+        <View style={styles.deleteSection}>
+          <Text style={styles.sectionSubTitle}>Danger Zone</Text>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => handleDeleteAccount()}>
+            <Text adjustsFontSizeToFit style={styles.buttonTitle}>Delete Account</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAwareScrollView>
     </View>
   )
@@ -225,7 +268,14 @@ const themedStyles = theme => StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    paddingBottom: 20,
+  },
+  divider: {
+    marginLeft: 30,
+    marginRight: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: '#cdcdcd',
   },
   switchStyle: {
     transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
@@ -262,6 +312,20 @@ const themedStyles = theme => StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: 'center'
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 20,
+    marginBottom: 20,
+    height: 48,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: 'center'
+  },
+  deleteSection: {
+    marginTop: 16,
   },
   buttonTitle: {
     color: 'white',
