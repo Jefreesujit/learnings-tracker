@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar, Switch, AsyncStorage, Platform } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar, Switch, AsyncStorage, Platform, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 import { useTheme, DefaultTheme, DarkTheme } from '@react-navigation/native';
@@ -86,6 +86,31 @@ const Settings = ({ route, navigation }) => {
     AsyncStorage.setItem('theme', JSON.stringify(newTheme));
     setTheme(newTheme);
   }
+
+  const deleteUser = async () => {
+    const uid = route.params.uid;
+    await usersRef.doc(uid).delete();
+    await auth().currentUser.delete();
+    console.log('User deleted');
+    navigation.navigate('Login');
+  };
+
+  const handleDeleteAccount = () =>
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Delete",
+          onPress: () => deleteUser(),
+          style: "delete"
+        }
+      ]
+  );
 
   const { colors, dark } = useTheme();
   const styles = themedStyles(colors);
@@ -186,6 +211,15 @@ const Settings = ({ route, navigation }) => {
             onValueChange={toggleSwitch}
             value={isEnabled} />
         </View>
+        <View style={styles.divider}></View>
+        <View style={styles.deleteSection}>
+          <Text style={styles.sectionSubTitle}>Danger Zone</Text>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => handleDeleteAccount()}>
+            <Text adjustsFontSizeToFit style={styles.buttonTitle}>Delete Account</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAwareScrollView>
     </View>
   )
@@ -225,7 +259,14 @@ const themedStyles = theme => StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    paddingBottom: 20,
+  },
+  divider: {
+    marginLeft: 30,
+    marginRight: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: '#cdcdcd',
   },
   switchStyle: {
     transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
@@ -262,6 +303,20 @@ const themedStyles = theme => StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: 'center'
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 20,
+    marginBottom: 20,
+    height: 48,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: 'center'
+  },
+  deleteSection: {
+    marginTop: 16,
   },
   buttonTitle: {
     color: 'white',
