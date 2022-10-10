@@ -31,27 +31,33 @@ export default function RegistrationScreen({ navigation }) {
       alert("Passwords don't match.")
       return
     }
-    auth().createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        const uid = response.user.uid;
-        const data = {
-          uid,
-          email,
-          fullName,
-          learnings: []
-        };
-        const usersRef = firestore().collection('users')
-        usersRef.doc(uid).set(data)
-          .then(() => {
-            navigation.navigate('Login', { ...data });
-          })
-          .catch((error) => {
-            alert(error)
-          });
-      })
-      .catch((error) => {
-        alert(error)
-      });
+
+    if (email && password) {
+      auth().createUserWithEmailAndPassword(email, password)
+        .then((response) => {
+          const uid = response.user.uid;
+          const data = {
+            uid,
+            email,
+            fullName,
+            learnings: []
+          };
+          const usersRef = firestore().collection('users')
+          usersRef.doc(uid).set(data)
+            .then(() => {
+              navigation.navigate('Login', { ...data });
+            })
+            .catch((error) => {
+              alert(error)
+            });
+        })
+        .catch((error) => {
+          alert(error)
+        });
+    } else {
+      alert("Please enter a valid email and password.")
+      return;
+    }
   }
 
   const { colors } = useTheme();
@@ -132,7 +138,7 @@ const themedStyles = theme => StyleSheet.create({
     height: 100,
     width: 100,
     alignSelf: "center",
-    margin: 30
+    margin: 50,
   },
   input: {
     height: 48,

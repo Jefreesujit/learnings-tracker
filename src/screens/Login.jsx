@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar } from 'react-native';
+import { Image, Icon, Text, TextInput, TouchableOpacity, View, StyleSheet, StatusBar } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
-import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
@@ -36,7 +36,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLoginSuccess = (user, source) => {
     const uid = user.uid;
-    let name = fullName || 'Learner';
+    let name = user.name ? user.name : (fullName || 'Learner');
     let fcmToken;
     const usersRef = firestore().collection('users');
     const deviceStats = getDeviceStats();
@@ -52,6 +52,7 @@ export default function LoginScreen({ navigation }) {
             fullName: name,
             learnings: [],
             fcmToken,
+            photo: user.photo || '',
             ...deviceStats,
           });
         } else {
@@ -147,14 +148,19 @@ export default function LoginScreen({ navigation }) {
       setShowNameInput(false);
     }
     else {
-      auth().signInWithEmailAndPassword(email, password)
-        .then((response) => {
-          console.log('User signed in with email', response);
-          handleLoginSuccess(response.user, 'Email SignIn');
-        })
-        .catch(error => {
-          alert(error)
-        });
+      if (email && password) {
+        auth().signInWithEmailAndPassword(email, password)
+          .then((response) => {
+            console.log('User signed in with email', response);
+            handleLoginSuccess(response.user, 'Email SignIn');
+          })
+          .catch(error => {
+            alert(error)
+          });
+      } else {
+        alert("Please enter a valid email and password.")
+        return
+      }
     }
   }
 
@@ -178,12 +184,12 @@ export default function LoginScreen({ navigation }) {
           source={require('../../assets/icon.png')}
         />
         {showGoogleLogin && (
-          <GoogleSigninButton
-            style={styles.googleButton}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Dark}
-            onPress={onGoogleButtonPress}
-          />
+          <TouchableOpacity
+            style={styles.customGoogleButton}
+            onPress={() => onGoogleButtonPress()}>
+            <Image style={styles.googleIcon} source={require('../../assets/g-icon.png')} />
+              <Text adjustsFontSizeToFit style={styles.googleText}>Sign in with Google</Text>
+          </TouchableOpacity>
         )}
         { showEmailInput && (
           <>
@@ -211,7 +217,7 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => onLoginPress()}>
-          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Log in with Email</Text>
+          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Sign in with Email</Text>
         </TouchableOpacity>
         <Text adjustsFontSizeToFit style={styles.separator}> ------------- OR ------------- </Text>
         {showNameInput && (
@@ -228,7 +234,7 @@ export default function LoginScreen({ navigation }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() => handleAnonymousSignIn()}>
-          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Log in Anonymously</Text>
+          <Text adjustsFontSizeToFit style={styles.buttonTitle}>Sign in Anonymously</Text>
         </TouchableOpacity>
         <View style={styles.footerView}>
           <Text adjustsFontSizeToFit style={styles.footerText}>Don't have an account? <Text adjustsFontSizeToFit onPress={onFooterLinkPress} style={styles.footerLink}>Sign up</Text></Text>
@@ -258,7 +264,7 @@ const themedStyles = theme => StyleSheet.create({
     height: 100,
     width: 100,
     alignSelf: "center",
-    margin: 30
+    margin: 50,
   },
   separator: {
     textAlign: 'center',
@@ -290,18 +296,30 @@ const themedStyles = theme => StyleSheet.create({
     alignItems: "center",
     justifyContent: 'center'
   },
-  googleButton: {
-    marginLeft: 48,
-    marginRight: 32,
+  customGoogleButton: {
+    backgroundColor: '#4285f4',
+    marginLeft: 23,
+    marginRight: 23,
+    // marginTop: 20,
     marginBottom: 20,
-    // height: 54,
-    // width: 360,
-    textAlign: 'center',
+    height: 48,
     borderRadius: 5,
     alignItems: "center",
-    justifyContent: 'center',
-    fontSize: 20,
-    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+    justifyContent: 'space-between',
+    flexDirection: 'row'
+  },
+  googleIcon: {
+    height: 48,
+    width: 48,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+  googleText: {
+    marginRight: '25%',
+    color: 'white',
+    fontSize: RFValue(16),
+    fontWeight: "bold"
   },
   buttonTitle: {
     color: 'white',

@@ -77,6 +77,7 @@ const Home = ({ route, navigation }) => {
               updateState={setTags}
               tags={tags}
               placeholder="Add labels"
+              placeholderTextColor="#aaaaaa"
               inputContainerStyle={styles.tagContainer}
               inputStyle={styles.tagInput}
               tagStyle={styles.tag}
