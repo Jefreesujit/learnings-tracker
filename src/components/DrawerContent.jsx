@@ -48,7 +48,7 @@ const DrawerContent = (props) => {
       </View>
       <View style={styles.footer}>
         <Text>Learnings Today</Text>
-        <Text>v1.0.3</Text>
+        <Text>v1.0.4</Text>
       </View>
     </DrawerContentScrollView>
   );
