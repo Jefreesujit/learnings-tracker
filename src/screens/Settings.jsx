@@ -6,6 +6,7 @@ import { useTheme, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
 import { ThemeContext } from '../components/ThemeContext';
+import { trackEvent } from '../utils/analytics';
 
 const Settings = ({ route, navigation }) => {
   const [fullName, setFullName] = useState('');
@@ -37,6 +38,7 @@ const Settings = ({ route, navigation }) => {
     const uid = route.params.uid;
     usersRef.doc(uid).update({ fullName }).then(() => {
       navigation.setParams({ name: fullName });
+      trackEvent('Change Name');
       alert('Display name updated successfully')
     });
   };
@@ -52,6 +54,7 @@ const Settings = ({ route, navigation }) => {
     reauthenticate(currentPassword).then(() => {
       const user = auth().currentUser;
       user.updatePassword(newPassword).then(() => {
+        trackEvent('Change Password');
         alert("Password changed succesfully");
         setCurrentPassword('');
         setNewPassword('');
@@ -67,17 +70,23 @@ const Settings = ({ route, navigation }) => {
 
   const linkWithCredential = () => {
     const uid = route.params.uid;
-    const cred = auth.EmailAuthProvider.credential(email, password);
-    const user = auth().currentUser;
-    auth().currentUser.linkWithCredential(cred).then((response) => {
-      // console.log('Linked with email', response);
-      alert('Linked with email successfully');
-      setIsAnonymous(false);
-      usersRef.doc(uid).update({ email });
-    }).catch((error) => {
-      console.log(error);
-      alert(error);
-    });
+    if (email && password) {
+      const cred = auth.EmailAuthProvider.credential(email, password);
+      const user = auth().currentUser;
+      auth().currentUser.linkWithCredential(cred).then((response) => {
+        // console.log('Linked with email', response);
+        trackEvent('Link with email');
+        alert('Linked with email successfully');
+        setIsAnonymous(false);
+        usersRef.doc(uid).update({ email });
+      }).catch((error) => {
+        console.log(error);
+        alert(error);
+      });
+    } else {
+      alert("Please enter a valid credentials.");
+      return;
+    }
   }
 
   const toggleSwitch = async () => {
@@ -91,6 +100,7 @@ const Settings = ({ route, navigation }) => {
     const uid = route.params.uid;
     await usersRef.doc(uid).delete();
     await auth().currentUser.delete();
+    trackEvent('Delete account');
     console.log('User deleted');
     navigation.navigate('Login');
   };
@@ -116,7 +126,6 @@ const Settings = ({ route, navigation }) => {
   const styles = themedStyles(colors);
 
   const isEnabled = theme.dark === true;
-  console.log('isEnabled', isEnabled, theme);
 
   return (
     <View style={styles.container}>

@@ -5,6 +5,7 @@ import { useTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { RFValue } from "react-native-responsive-fontsize";
+import { trackEvent, increment } from '../utils/analytics';
 
 const Home = ({ route, navigation }) => {
   const { colors } = useTheme();
@@ -31,6 +32,8 @@ const Home = ({ route, navigation }) => {
         usersRef.doc(uid).update({
           learnings: [...learningsList, newLearningItem]
         }).then((response) => {
+          trackEvent('Add Learning');
+          increment('Learnings');
           setLearning('');
           setTags({ tag: '', tagsArray: [] });
           navigation.navigate('Success', { uid, name: route.params.name });

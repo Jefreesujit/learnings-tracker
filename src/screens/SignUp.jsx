@@ -5,6 +5,7 @@ import auth from '@react-native-firebase/auth';
 import { useTheme } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
+import { trackSignUp } from '../utils/analytics';
 
 export default function RegistrationScreen({ navigation }) {
   const [fullName, setFullName] = useState('')
@@ -45,6 +46,7 @@ export default function RegistrationScreen({ navigation }) {
           const usersRef = firestore().collection('users')
           usersRef.doc(uid).set(data)
             .then(() => {
+              trackSignUp(uid);
               navigation.navigate('Login', { ...data });
             })
             .catch((error) => {

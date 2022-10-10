@@ -16,6 +16,7 @@ import TimelineList from 'react-native-timeline-flatlist';
 import InsetShadow from 'react-native-inset-shadow'
 import firestore from '@react-native-firebase/firestore';
 import { RFValue } from "react-native-responsive-fontsize";
+import { increment } from '../utils/analytics';
 
 const formatData = (data) => data.reverse().map(d => {
   // const date = new Date(d.date).toDateString();
@@ -104,6 +105,7 @@ const Timeline = ({ route, navigation }) => {
           return false;
         }
       });
+      increment('Search');
       setDisplayData(filterData.reverse());
     } else {
       setDisplayData(timelineData.reverse());

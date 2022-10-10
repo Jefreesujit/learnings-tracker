@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import { RFValue } from "react-native-responsive-fontsize";
 import { getDeviceStats } from '../utils';
+import { trackLogin, trackUserDetails } from '../utils/analytics'
 
 GoogleSignin.configure({
   webClientId: '672734400651-06sp7162bddehvnlk2jcn8ea3lhnuhsc.apps.googleusercontent.com',
@@ -63,6 +64,8 @@ export default function LoginScreen({ navigation }) {
           });
           name = fData.fullName;
         }
+        trackLogin(uid, source);
+        trackUserDetails({ uid, email: user.email, name });
         setShowNameInput(false);
         setShowEmailInput(false);
         navigateToHome({ uid, name });
